@@ -16,11 +16,11 @@ module.exports = class Post extends Sequelize.Model {
           allowNull: false,
         },
         postContent: {
-          type: Sequelize.TINYINT,
+          type: Sequelize.STRING,
           allowNull: false,
         },
         postImg: {
-          type: Sequelize.TINYINT,
+          type: Sequelize.STRING,
           allowNull: true,
         },
       },

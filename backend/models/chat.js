@@ -34,8 +34,8 @@ module.exports = class Chat extends Sequelize.Model {
   }
   static associate(db) {
     db.Chat.belongsTo(db.ChatRoom, {
-      foreignKey: 'roomId',
-      sourceKey: 'roomId',
+      foreignKey: 'chatRoomId',
+      sourceKey: 'chatRoomId',
       onDelete: 'CASCADE',
     })
   }

@@ -6,13 +6,11 @@ module.exports = class ChatRoom extends Sequelize.Model {
       {
         chatRoomId: {
           primaryKey: true,
-          unique: true,
           allowNull: false,
-          autoIncrement: true,
           type: Sequelize.INTEGER,
         },
         userId2: {
-          type: Sequelize.STRING,
+          type: Sequelize.INTEGER,
           allowNull: true,
           unique: true,
         },
@@ -31,8 +29,10 @@ module.exports = class ChatRoom extends Sequelize.Model {
   }
   static associate(db) {
     db.ChatRoom.belongsTo(db.User, {
-      foreignKey: 'roomId',
-      sourceKey: 'roomId',
+      foreignKey: 'userId',
+      sourceKey: 'userId',
+      onDelete: 'CASCADE',
+      unique: false,
     })
   }
 }
