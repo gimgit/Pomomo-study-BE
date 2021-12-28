@@ -7,6 +7,7 @@ module.exports = class ChatRoom extends Sequelize.Model {
         chatRoomId: {
           primaryKey: true,
           allowNull: false,
+          unique: false,
           type: Sequelize.INTEGER,
         },
         userId2: {
