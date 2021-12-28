@@ -32,8 +32,12 @@ module.exports = class ChatRoom extends Sequelize.Model {
     db.ChatRoom.belongsTo(db.User, {
       foreignKey: 'userId',
       sourceKey: 'userId',
-      onDelete: 'CASCADE',
       unique: false,
+    })
+    db.ChatRoom.hasMany(db.Chat, {
+      foreignKey: 'chatRoomId',
+      sourceKey: 'chatRoomId',
+      onDelete: 'CASCADE',
     })
   }
 }

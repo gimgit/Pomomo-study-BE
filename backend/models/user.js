@@ -55,9 +55,22 @@ module.exports = class User extends Sequelize.Model {
     db.User.hasOne(db.PersonInRoom, {
       foreignKey: 'userId',
       sourceKey: 'userId',
+      onDelete: 'CASCADE',
     })
-    db.User.hasMany(db.Post, { foreignKey: 'userId', sourceKey: 'userId' })
-    db.User.hasMany(db.Comment, { foreignKey: 'userId', sourceKey: 'userId' })
-    db.User.hasMany(db.ChatRoom, { foreignKey: 'userId', sourceKey: 'userId' })
+    db.User.hasMany(db.Post, {
+      foreignKey: 'userId',
+      sourceKey: 'userId',
+      onDelete: 'CASCADE',
+    })
+    db.User.hasMany(db.Comment, {
+      foreignKey: 'userId',
+      sourceKey: 'userId',
+      onDelete: 'CASCADE',
+    })
+    db.User.hasMany(db.ChatRoom, {
+      foreignKey: 'userId',
+      sourceKey: 'userId',
+      onDelete: 'CASCADE',
+    })
   }
 }
