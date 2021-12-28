@@ -18,6 +18,7 @@
     "socket.io": "^4.4.0"
   },
   "devDependencies": {
+    "prettier": "^2.5.1",
     "sequelize-cli": "^6.3.0"
   }
 }
