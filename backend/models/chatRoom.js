@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize')
+const Sequelize = require("sequelize");
 
 module.exports = class ChatRoom extends Sequelize.Model {
   static init(sequelize) {
@@ -20,24 +20,24 @@ module.exports = class ChatRoom extends Sequelize.Model {
         sequelize,
         timestamps: true,
         underscored: false,
-        modelName: 'ChatRoom',
-        tableName: 'ChatRooms',
+        modelName: "ChatRoom",
+        tableName: "ChatRooms",
         paranoid: false,
-        charset: 'utf8',
-        collate: 'utf8_general_ci',
+        charset: "utf8",
+        collate: "utf8_general_ci",
       }
-    )
+    );
   }
   static associate(db) {
     db.ChatRoom.belongsTo(db.User, {
-      foreignKey: 'userId',
-      sourceKey: 'userId',
+      foreignKey: "userId",
+      sourceKey: "userId",
       unique: false,
-    })
+    });
     db.ChatRoom.hasMany(db.Chat, {
-      foreignKey: 'chatRoomId',
-      sourceKey: 'chatRoomId',
-      onDelete: 'CASCADE',
-    })
+      foreignKey: "chatRoomId",
+      sourceKey: "chatRoomId",
+      onDelete: "CASCADE",
+    });
   }
-}
+};

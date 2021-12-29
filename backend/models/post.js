@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize')
+const Sequelize = require("sequelize");
 
 module.exports = class Post extends Sequelize.Model {
   static init(sequelize) {
@@ -28,23 +28,23 @@ module.exports = class Post extends Sequelize.Model {
         sequelize,
         timestamps: true,
         underscored: false,
-        modelName: 'Post',
-        tableName: 'Posts',
+        modelName: "Post",
+        tableName: "Posts",
         paranoid: false,
-        charset: 'utf8',
-        collate: 'utf8_general_ci',
+        charset: "utf8",
+        collate: "utf8_general_ci",
       }
-    )
+    );
   }
   static associate(db) {
     db.Post.belongsTo(db.User, {
-      foreignKey: 'userId',
-      targetKey: 'userId',
-    })
+      foreignKey: "userId",
+      targetKey: "userId",
+    });
     db.Post.hasMany(db.Comment, {
-      foreignKey: 'postId',
-      sourceKey: 'postId',
-      onDelete: 'CASCADE',
-    })
+      foreignKey: "postId",
+      sourceKey: "postId",
+      onDelete: "CASCADE",
+    });
   }
-}
+};
