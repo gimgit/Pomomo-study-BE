@@ -1,9 +1,9 @@
-require('dotenv').config()
+require('dotenv').config();
 
 module.exports = {
   development: {
     username: 'admin',
-    password: process.env.MYSQL,
+    password: process.env.MYSQL_PW,
     database: 'pomomoDB',
     host: process.env.MYSQL_HOST,
     dialect: 'mysql',
@@ -22,4 +22,4 @@ module.exports = {
     host: '127.0.0.1',
     dialect: 'mysql',
   },
-}
+};

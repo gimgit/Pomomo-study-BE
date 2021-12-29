@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize')
+const Sequelize = require('sequelize');
 
 module.exports = class User extends Sequelize.Model {
   static init(sequelize) {
@@ -25,7 +25,7 @@ module.exports = class User extends Sequelize.Model {
           unique: false,
           allowNull: false,
         },
-        profile: {
+        profileImg: {
           type: Sequelize.STRING,
           allowNull: true,
         },
@@ -48,29 +48,32 @@ module.exports = class User extends Sequelize.Model {
         charset: 'utf8',
         collate: 'utf8_general_ci',
       }
-    )
+    );
   }
   static associate(db) {
-    db.User.hasMany(db.StudyTime, { foreignKey: 'userId', sourceKey: 'userId' })
+    db.User.hasMany(db.StudyTime, {
+      foreignKey: 'userId',
+      sourceKey: 'userId',
+    });
     db.User.hasOne(db.PersonInRoom, {
       foreignKey: 'userId',
       sourceKey: 'userId',
       onDelete: 'CASCADE',
-    })
+    });
     db.User.hasMany(db.Post, {
       foreignKey: 'userId',
       sourceKey: 'userId',
       onDelete: 'CASCADE',
-    })
+    });
     db.User.hasMany(db.Comment, {
       foreignKey: 'userId',
       sourceKey: 'userId',
       onDelete: 'CASCADE',
-    })
+    });
     db.User.hasMany(db.ChatRoom, {
       foreignKey: 'userId',
       sourceKey: 'userId',
       onDelete: 'CASCADE',
-    })
+    });
   }
-}
+};
