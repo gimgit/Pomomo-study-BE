@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize')
+const Sequelize = require("sequelize");
 
 module.exports = class Room extends Sequelize.Model {
   static init(sequelize) {
@@ -49,18 +49,18 @@ module.exports = class Room extends Sequelize.Model {
         sequelize,
         timestamps: true,
         underscored: false,
-        modelName: 'Room',
-        tableName: 'Rooms',
+        modelName: "Room",
+        tableName: "Rooms",
         paranoid: false,
-        charset: 'utf8',
-        collate: 'utf8_general_ci',
+        charset: "utf8",
+        collate: "utf8_general_ci",
       }
-    )
+    );
   }
   static associate(db) {
     db.Room.hasMany(db.PersonInRoom, {
-      foreignKey: 'roomId',
-      sourceKey: 'roomId',
-    })
+      foreignKey: "roomId",
+      sourceKey: "roomId",
+    });
   }
-}
+};

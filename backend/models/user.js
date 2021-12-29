@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize')
+const Sequelize = require("sequelize");
 
 module.exports = class User extends Sequelize.Model {
   static init(sequelize) {
@@ -7,31 +7,30 @@ module.exports = class User extends Sequelize.Model {
         userId: {
           primaryKey: true,
           unique: true,
-          allowNull: false,
           autoIncrement: true,
           type: Sequelize.INTEGER,
         },
         email: {
           type: Sequelize.STRING,
-          allowNull: true,
+          allowNull: false,
           unique: true,
         },
         password: {
           type: Sequelize.STRING,
-          allowNull: true,
+          allowNull: false,
         },
         nick: {
           type: Sequelize.STRING,
           unique: false,
           allowNull: false,
         },
-        profile: {
+        profileImg: {
           type: Sequelize.STRING,
           allowNull: true,
         },
         category: {
           type: Sequelize.STRING,
-          allowNull: false,
+          allowNull: true,
         },
         statusMsg: {
           type: Sequelize.STRING,
@@ -42,35 +41,38 @@ module.exports = class User extends Sequelize.Model {
         sequelize,
         timestamps: true,
         underscored: false,
-        modelName: 'User',
-        tableName: 'users',
+        modelName: "User",
+        tableName: "users",
         paranoid: false,
-        charset: 'utf8',
-        collate: 'utf8_general_ci',
+        charset: "utf8",
+        collate: "utf8_general_ci",
       }
-    )
+    );
   }
   static associate(db) {
-    db.User.hasMany(db.StudyTime, { foreignKey: 'userId', sourceKey: 'userId' })
+    db.User.hasMany(db.StudyTime, {
+      foreignKey: "userId",
+      sourceKey: "userId",
+    });
     db.User.hasOne(db.PersonInRoom, {
-      foreignKey: 'userId',
-      sourceKey: 'userId',
-      onDelete: 'CASCADE',
-    })
+      foreignKey: "userId",
+      sourceKey: "userId",
+      onDelete: "CASCADE",
+    });
     db.User.hasMany(db.Post, {
-      foreignKey: 'userId',
-      sourceKey: 'userId',
-      onDelete: 'CASCADE',
-    })
+      foreignKey: "userId",
+      sourceKey: "userId",
+      onDelete: "CASCADE",
+    });
     db.User.hasMany(db.Comment, {
-      foreignKey: 'userId',
-      sourceKey: 'userId',
-      onDelete: 'CASCADE',
-    })
+      foreignKey: "userId",
+      sourceKey: "userId",
+      onDelete: "CASCADE",
+    });
     db.User.hasMany(db.ChatRoom, {
-      foreignKey: 'userId',
-      sourceKey: 'userId',
-      onDelete: 'CASCADE',
-    })
+      foreignKey: "userId",
+      sourceKey: "userId",
+      onDelete: "CASCADE",
+    });
   }
-}
+};
