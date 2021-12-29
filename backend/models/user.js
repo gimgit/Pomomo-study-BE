@@ -21,7 +21,7 @@ module.exports = class User extends Sequelize.Model {
         },
         nick: {
           type: Sequelize.STRING,
-          unique: false,
+          unique: true,
           allowNull: false,
         },
         profileImg: {

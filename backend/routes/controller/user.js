@@ -1,4 +1,3 @@
-
 const { User, StudyTime, sequelize } = require("../../models");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
@@ -105,12 +104,10 @@ async function updateUserImg(req, res) {
   }
 }
 
-
 // sign-up
 async function AddUser(req, res) {
   try {
     const { email, password, passwordConfirm, nick } = req.body;
-    console.log(req.body);
 
     // 공백 확인
     if (
@@ -213,8 +210,6 @@ async function Login(req, res) {
     });
   }
 }
-
-
 
 module.exports = {
   checkUserInfo,
