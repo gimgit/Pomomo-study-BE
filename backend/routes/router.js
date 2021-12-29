@@ -6,9 +6,15 @@ const {
   updateUserInfo,
   updateUserStatus,
   updateUserImg,
+  AddUser,
+  Login,
 } = require("./controller/user");
+const auth = require("../middlewares/auth-middlewares");
 
 Router.post("/study/:userId/recordTime", recordStudyTime);
+
+Router.post("/user/signup", AddUser);
+Router.post("/user/login", Login);
 
 Router.get("/user/:userId/mypage", checkUserInfo);
 Router.put("/user/:userId/info", updateUserInfo);

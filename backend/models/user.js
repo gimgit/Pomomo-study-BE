@@ -7,18 +7,17 @@ module.exports = class User extends Sequelize.Model {
         userId: {
           primaryKey: true,
           unique: true,
-          allowNull: false,
           autoIncrement: true,
           type: Sequelize.INTEGER,
         },
         email: {
           type: Sequelize.STRING,
-          allowNull: true,
+          allowNull: false,
           unique: true,
         },
         password: {
           type: Sequelize.STRING,
-          allowNull: true,
+          allowNull: false,
         },
         nick: {
           type: Sequelize.STRING,
@@ -31,7 +30,7 @@ module.exports = class User extends Sequelize.Model {
         },
         category: {
           type: Sequelize.STRING,
-          allowNull: false,
+          allowNull: true,
         },
         statusMsg: {
           type: Sequelize.STRING,
