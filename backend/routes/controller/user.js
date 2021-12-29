@@ -1,117 +1,9 @@
-// 로그인, 회원가입
-const { Op } = require("sequelize");
-const { User } = require("../../models");
+
+const { User, StudyTime, sequelize } = require("../../models");
+const Sequelize = require("sequelize");
+const Op = Sequelize.Op;
 const jwt = require("jsonwebtoken");
 // const bcrypt = require("bcrypt");
-
-// sign-up
-async function AddUser(req, res) {
-  try {
-    const { email, password, passwordConfirm, nick } = req.body;
-    console.log(req.body);
-
-    // 공백 확인
-    if (
-      email === "" ||
-      password === "" ||
-      passwordConfirm === "" ||
-      nick === ""
-    ) {
-      res.status(412).send({
-        errorMessage: "빠짐 없이 입력해주세요.",
-      });
-      return;
-    }
-
-    // 이메일 양식 확인
-    const emailForm =
-      /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
-    if (emailForm.test(email) !== true) {
-      res.status(400).send({
-        errorMessage: "이메일 형식으로 입력해주세요.",
-      });
-      return;
-    }
-    // 암호화 추가하기
-
-    // 패스워드 양식 확인
-    if (password.length < 6 == true) {
-      res.status(400).send({
-        errorMessage: "패스워드는 6자 이상으로 입력해주세요.",
-      });
-      return;
-    }
-
-    // 패스워드 불일치(입력, 재입력 칸)
-    if (password !== passwordConfirm) {
-      res.status(400).send({
-        errorMessage: "패스워드가 패스워드 확인란과 동일하지 않습니다.",
-      });
-      return;
-    }
-
-    // 이미 동일 정보가 있을 경우
-    const existUsers = await User.findAll({
-      where: {
-        [Op.or]: [{ email }],
-      },
-    });
-    if (existUsers.length) {
-      res.status(400).send({
-        errorMessage: "이미 가입된 이메일 또는 닉네임이 있습니다.",
-      });
-      return;
-    }
-
-    // 회원가입 정보를 db에 저장
-    await User.create({ email, nick, password });
-
-    res.status(201).send({}); // post created 201 반환
-    return;
-  } catch (err) {
-    console.log(err);
-    res.status(400).send({
-      errorMessage: "요청한 데이터 형식이 올바르지 않습니다.",
-    });
-  }
-}
-
-// login
-async function Login(req, res) {
-  try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ where: { email, password } }); // user 조회, findOne 사용 가능, 이메일과 패스워드가 둘 다 맞아야함
-
-    // 공백 확인
-    if (email === "" || password === "") {
-      res.status(412).send({
-        errorMessage: "빠짐 없이 입력해주세요.",
-      });
-      return;
-    }
-
-    // user 정보 불일치
-    if (!user) {
-      res.status(400).send({
-        errorMessage: "이메일 또는 패스워드가 잘못됐습니다.",
-      });
-      return;
-    }
-    // user 정보 일치
-    const nick = user.nick;
-    const token = jwt.sign({ userId: user.userId }, process.env.SECRET_KEY);
-    res.send({
-      token,
-      email,
-      nick,
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(400).send({
-      errorMessage: "요청한 데이터 형식이 올바르지 않습니다.",
-    });
-  }
-}
 
 async function checkUserInfo(req, res) {
   let now = new Date(Date.now() + 32400000);
@@ -213,11 +105,122 @@ async function updateUserImg(req, res) {
   }
 }
 
+
+// sign-up
+async function AddUser(req, res) {
+  try {
+    const { email, password, passwordConfirm, nick } = req.body;
+    console.log(req.body);
+
+    // 공백 확인
+    if (
+      email === "" ||
+      password === "" ||
+      passwordConfirm === "" ||
+      nick === ""
+    ) {
+      res.status(412).send({
+        errorMessage: "빠짐 없이 입력해주세요.",
+      });
+      return;
+    }
+
+    // 이메일 양식 확인
+    const emailForm =
+      /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
+    if (emailForm.test(email) !== true) {
+      res.status(400).send({
+        errorMessage: "이메일 형식으로 입력해주세요.",
+      });
+      return;
+    }
+    // 암호화 추가하기
+
+    // 패스워드 양식 확인
+    if (password.length < 6 == true) {
+      res.status(400).send({
+        errorMessage: "패스워드는 6자 이상으로 입력해주세요.",
+      });
+      return;
+    }
+
+    // 패스워드 불일치(입력, 재입력 칸)
+    if (password !== passwordConfirm) {
+      res.status(400).send({
+        errorMessage: "패스워드가 패스워드 확인란과 동일하지 않습니다.",
+      });
+      return;
+    }
+
+    // 이미 동일 정보가 있을 경우
+    const existUsers = await User.findAll({
+      where: {
+        [Op.or]: [{ email }],
+      },
+    });
+    if (existUsers.length) {
+      res.status(400).send({
+        errorMessage: "이미 가입된 이메일 또는 닉네임이 있습니다.",
+      });
+      return;
+    }
+
+    // 회원가입 정보를 db에 저장
+    await User.create({ email, nick, password });
+    res.status(201).send({}); // post created 201 반환
+    return;
+  } catch (err) {
+    console.log(err);
+    res.status(400).send({
+      errorMessage: "요청한 데이터 형식이 올바르지 않습니다.",
+    });
+  }
+}
+
+// login
+async function Login(req, res) {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ where: { email, password } }); // user 조회, findOne 사용 가능, 이메일과 패스워드가 둘 다 맞아야함
+
+    // 공백 확인
+    if (email === "" || password === "") {
+      res.status(412).send({
+        errorMessage: "빠짐 없이 입력해주세요.",
+      });
+      return;
+    }
+
+    // user 정보 불일치
+    if (!user) {
+      res.status(400).send({
+        errorMessage: "이메일 또는 패스워드가 잘못됐습니다.",
+      });
+      return;
+    }
+    // user 정보 일치
+    const nick = user.nick;
+    const token = jwt.sign({ userId: user.userId }, process.env.SECRET_KEY);
+    res.send({
+      token,
+      email,
+      nick,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(400).send({
+      errorMessage: "요청한 데이터 형식이 올바르지 않습니다.",
+    });
+  }
+}
+
+
+
 module.exports = {
-  AddUser,
-  Login,
   checkUserInfo,
   updateUserInfo,
   updateUserStatus,
   updateUserImg,
+  AddUser,
+  Login,
 };
