@@ -16,10 +16,9 @@ Router.post("/study/:userId/recordTime", recordStudyTime);
 Router.post("/user/signup", AddUser);
 Router.post("/user/login", Login);
 
-Router.get("/user/:userId/mypage", checkUserInfo);
-Router.put("/user/:userId/info", updateUserInfo);
-Router.put("/user/:userId/status", updateUserStatus);
-Router.put("/user/:userId/profileImg", updateUserImg);
-
+Router.get("/:userId/mypage", checkUserInfo);
+Router.put("/:userId/info", updateUserInfo);
+Router.put("/:userId/status", updateUserStatus);
+Router.put("/:userId/profileImg", updateUserImg);
 
 module.exports = Router;
