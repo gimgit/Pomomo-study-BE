@@ -1,7 +1,12 @@
-const Router = require('express').Router()
+const Router = require("express").Router();
 
-const { recordStudyTime } = require('./controller/studyTimer')
+const { recordStudyTime } = require("./controller/studyTimer");
+const { AddUser, Login } = require("./controller/user");
+const auth = require("../middlewares/auth-middlewares");
 
-Router.post('/users/recordTime', recordStudyTime)
+//User
+Router.post("/user/signup", AddUser);
+Router.post("/user/login", Login);
+Router.post("/users/recordTime", recordStudyTime);
 
-module.exports = Router
+module.exports = Router;

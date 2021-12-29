@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize')
+const Sequelize = require("sequelize");
 
 module.exports = class StudyTime extends Sequelize.Model {
   static init(sequelize) {
@@ -17,18 +17,18 @@ module.exports = class StudyTime extends Sequelize.Model {
         sequelize,
         timestamps: true,
         underscored: false,
-        modelName: 'StudyTime',
-        tableName: 'StudyTimes',
+        modelName: "StudyTime",
+        tableName: "StudyTimes",
         paranoid: false,
-        charset: 'utf8',
-        collate: 'utf8_general_ci',
+        charset: "utf8",
+        collate: "utf8_general_ci",
       }
-    )
+    );
   }
   static associate(db) {
     db.StudyTime.belongsTo(db.User, {
-      foreignKey: 'userId',
-      targetKey: 'userId',
-    })
+      foreignKey: "userId",
+      targetKey: "userId",
+    });
   }
-}
+};
