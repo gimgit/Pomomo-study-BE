@@ -36,7 +36,7 @@ async function checkUserInfo(req, res) {
       },
       attributes: [[sequelize.fn("sum", sequelize.col("studyTime")), "today"]],
     });
-    res.status(201).json({
+    res.status(200).json({
       user: userInfo,
       totalRecord: studyRecord,
       todayRecord: todayRecord,
@@ -52,6 +52,13 @@ async function updateUserInfo(req, res) {
   const { userId } = req.params;
   const { category, nick } = req.body;
   try {
+    const existNick = await User.findOne({
+      where: { nick: nick },
+    });
+    if (existNick)
+      return res
+        .status(400)
+        .send({ errorMessage: "이미 사용중인 닉네임입니다." });
     const userInfo = await User.findOne({
       where: { userId: userId },
     });
@@ -61,7 +68,7 @@ async function updateUserInfo(req, res) {
       { category: category, nick: nick },
       { where: { userId: userId } }
     );
-    res.status(204).json({ code: 204, msg: "수정완료!" });
+    res.status(201).send({ msg: "수정완료!" });
   } catch (err) {
     res.status(400).send({
       errorMessage: "요청한 데이터 형식이 올바르지 않습니다.",
@@ -77,7 +84,7 @@ async function updateUserStatus(req, res) {
     if (!userInfo) return res.status(400).send("err");
 
     await User.update({ statusMsg: statusMsg }, { where: { userId: userId } });
-    res.status(204).json({ code: 204, msg: "수정완료!" });
+    res.status(201).json({ msg: "수정완료!" });
   } catch (err) {
     res.status(400).send({
       errorMessage: "요청한 데이터 형식이 올바르지 않습니다.",
@@ -96,7 +103,7 @@ async function updateUserImg(req, res) {
       { profileImg: profileImg },
       { where: { userId: userId } }
     );
-    res.status(204).json({ code: 204, msg: "수정완료!" });
+    res.status(201).json({ msg: "수정완료!" });
   } catch (err) {
     res.status(400).send({
       errorMessage: "요청한 데이터 형식이 올바르지 않습니다.",
@@ -196,13 +203,11 @@ async function Login(req, res) {
       return;
     }
     // user 정보 일치
-    const nick = user.nick;
     const token = jwt.sign({ userId: user.userId }, process.env.SECRET_KEY);
     res.send({
       token,
-      email,
-      nick,
     });
+    console.log(token);
   } catch (err) {
     console.log(err);
     res.status(400).send({
