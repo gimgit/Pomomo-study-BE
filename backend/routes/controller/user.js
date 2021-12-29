@@ -1,3 +1,4 @@
+
 const { User, StudyTime, sequelize } = require("../../models");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
@@ -104,6 +105,7 @@ async function updateUserImg(req, res) {
   }
 }
 
+
 // sign-up
 async function AddUser(req, res) {
   try {
@@ -165,8 +167,7 @@ async function AddUser(req, res) {
 
     // 회원가입 정보를 db에 저장
     await User.create({ email, nick, password });
-
-    res.status(201); // post created 201 반환
+    res.status(201).send({}); // post created 201 반환
     return;
   } catch (err) {
     console.log(err);
@@ -212,6 +213,8 @@ async function Login(req, res) {
     });
   }
 }
+
+
 
 module.exports = {
   checkUserInfo,

@@ -21,4 +21,5 @@ Router.put("/user/:userId/info", updateUserInfo);
 Router.put("/user/:userId/status", updateUserStatus);
 Router.put("/user/:userId/profileImg", updateUserImg);
 
+
 module.exports = Router;
