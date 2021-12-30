@@ -4,15 +4,13 @@ const Op = Sequelize.Op;
 
 async function checkUserInfo(req, res) {
   let now = new Date(Date.now() + 32400000);
+  let tomorrow = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
   let year = now.getFullYear();
   let month = now.getMonth() + 1;
   let date = now.getDate();
-  let startDate = now.getDate() - 1;
-  let todayStart = `${year}-${month}-${startDate}T04:00:00.000Z`;
-  let todayEnd = `${year}-${month}-${date}T04:00:00.000Z`;
-  console.log(now);
-  console.log(todayStart);
-  console.log(todayEnd);
+  let nextDate = tomorrow.getDate();
+  let todayStart = `${year}-${month}-${date}T04:00:00.000Z`;
+  let todayEnd = `${year}-${month}-${nextDate}T03:59:59.000Z`;
 
   const { userId } = req.params;
 
@@ -34,6 +32,10 @@ async function checkUserInfo(req, res) {
       },
       attributes: [[sequelize.fn("sum", sequelize.col("studyTime")), "today"]],
     });
+    console.log(now);
+    console.log(tomorrow);
+    console.log(todayStart);
+    console.log(todayEnd);
     return res.status(200).json({
       user: userInfo,
       totalRecord: studyRecord,

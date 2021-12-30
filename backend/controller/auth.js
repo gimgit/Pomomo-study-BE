@@ -50,7 +50,17 @@ async function createUser(req, res) {
       });
     }
 
-    // 회원가입 정보를 db에 저장
+    const existNick = await User.findAll({
+      where: {
+        [Op.or]: [{ nick }],
+      },
+    });
+    if (existNick.length) {
+      return res.status(400).send({
+        msg: "이미 가입된 아이디 또는 닉네임이 있습니다.",
+      });
+    }
+
     await User.create({ username, nick, password, category });
     return res.status(201).send({}); // post created 201 반환
   } catch (err) {
