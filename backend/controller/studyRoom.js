@@ -1,6 +1,6 @@
-const { Room, User } = require("../models");
+const { Room, User, PersonInRoom } = require("../models");
 
-async function recommendRoom(req, res) {
+async function catRecommend(req, res) {
   const { userId } = req.params;
   const Usertype = await User.findOne({
     where: { userId: userId },
@@ -8,8 +8,6 @@ async function recommendRoom(req, res) {
     raw: true,
   });
   let basis = Usertype.category;
-  console.log(basis);
-  console.log(userId);
   switch (basis) {
     case "중3":
       console.log("중3");
@@ -40,7 +38,7 @@ async function recommendRoom(req, res) {
   }
 }
 
-async function searchRoom(req, res) {
+async function keywordSearch(req, res) {
   let { roomPurpose } = req.body;
 
   switch (parseInt(roomPurpose)) {
@@ -57,6 +55,7 @@ async function searchRoom(req, res) {
       const exam = await Room.findAll({
         where: { purpose: roomPurpose },
         attributes: { exclude: ["roomPassword"] },
+        inclue: [PersonInRoom],
       });
       res.status(200).send({ result: exam });
       break;
@@ -88,6 +87,6 @@ async function searchRoom(req, res) {
 }
 
 module.exports = {
-  recommendRoom,
-  searchRoom,
+  catRecommend,
+  keywordSearch,
 };
