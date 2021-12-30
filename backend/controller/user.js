@@ -50,13 +50,6 @@ async function updateUserInfo(req, res) {
   const { userId } = req.params;
   const { category, nick } = req.body;
   try {
-    const existNick = await User.findOne({
-      where: { nick: nick },
-    });
-    if (existNick)
-      return res
-        .status(400)
-        .send({ errorMessage: "이미 사용중인 닉네임입니다." });
     const userInfo = await User.findOne({
       where: { userId: userId },
     });
@@ -69,7 +62,7 @@ async function updateUserInfo(req, res) {
     return res.status(201).send({ msg: "수정완료!" });
   } catch (err) {
     return res.status(400).send({
-      msg: "요청한 데이터 형식이 올바르지 않습니다.",
+      msg: "이미 존재하는 닉네임 또는 요청하는 데이터 형식이 올바르지 않습니다.",
     });
   }
 }

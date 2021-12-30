@@ -46,7 +46,7 @@ async function createUser(req, res) {
     });
     if (existUsers.length) {
       return res.status(400).send({
-        msg: "이미 가입된 이메일 또는 닉네임이 있습니다.",
+        msg: "이미 가입된 아이디 또는 닉네임이 있습니다.",
       });
     }
 
