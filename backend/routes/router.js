@@ -9,6 +9,7 @@ const {
   AddUser,
   Login,
 } = require("./controller/user");
+const { recommendRoom, searchRoom } = require("./controller/studyRoom");
 const auth = require("../middlewares/auth-middlewares");
 
 Router.post("/study/:userId/recordTime", recordStudyTime);
@@ -20,5 +21,8 @@ Router.get("/:userId/mypage", checkUserInfo);
 Router.put("/:userId/info", updateUserInfo);
 Router.put("/:userId/status", updateUserStatus);
 Router.put("/:userId/profileImg", updateUserImg);
+
+Router.get("/:userId/reccomendRoomList", recommendRoom);
+Router.get("/keywordRoomList", searchRoom);
 
 module.exports = Router;
