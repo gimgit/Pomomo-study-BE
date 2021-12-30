@@ -24,7 +24,7 @@ async function createUser(req, res) {
 
     // 암호화 추가하기
 
-    const pwForm = /^[a-zA-Z0-9]{6,12}$/;
+    const pwForm = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,15}$/;
     if (pwForm.test(password) !== true) {
       return res.status(400).send({
         msg: "패스워드 양식에 맞춰 작성바랍니다.",

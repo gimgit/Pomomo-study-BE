@@ -10,7 +10,7 @@ module.exports = class User extends Sequelize.Model {
           autoIncrement: true,
           type: Sequelize.INTEGER,
         },
-        email: {
+        username: {
           type: Sequelize.STRING,
           allowNull: false,
           unique: true,
@@ -30,7 +30,7 @@ module.exports = class User extends Sequelize.Model {
         },
         category: {
           type: Sequelize.STRING,
-          allowNull: true,
+          allowNull: false,
         },
         statusMsg: {
           type: Sequelize.STRING,
