@@ -24,7 +24,7 @@ module.exports = class Room extends Sequelize.Model {
           allowNull: true,
         },
         purpose: {
-          type: Sequelize.STRING,
+          type: Sequelize.INTEGER,
           allowNull: false,
         },
         round: {

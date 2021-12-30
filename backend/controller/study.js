@@ -1,4 +1,4 @@
-const { StudyTime } = require("../../models");
+const { StudyTime } = require("../models");
 
 async function startPomodoro(req, res) {
   const { userId } = req.params;
@@ -9,7 +9,7 @@ async function startPomodoro(req, res) {
       purpose: purpose,
       studyTime: studyTime,
     });
-    res.status(201).json({ code: 201, msg: "작성완료" });
+    res.status(201).send({ msg: "작성완료" });
   } catch (err) {
     console.log(err);
   }
@@ -24,7 +24,7 @@ async function endPomodoro(req, res) {
       purpose: purpose,
       studyTime: studyTime,
     });
-    res.status(201).json({ code: 201, msg: "작성완료" });
+    res.status(201).send({ msg: "작성완료" });
   } catch (err) {
     console.log(err);
   }
@@ -39,7 +39,7 @@ async function recessTime(req, res) {
       purpose: purpose,
       studyTime: studyTime,
     });
-    res.status(201).json({ code: 201, msg: "작성완료" });
+    res.status(201).send({ msg: "작성완료" });
   } catch (err) {
     console.log(err);
   }
@@ -54,7 +54,7 @@ async function recordStudyTime(req, res) {
       purpose: purpose,
       studyTime: studyTime,
     });
-    res.status(201).json({ code: 201, msg: "작성완료" });
+    res.status(201).send({ msg: "작성완료" });
   } catch (err) {
     console.log(err);
   }
