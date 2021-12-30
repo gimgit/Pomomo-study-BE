@@ -1,4 +1,4 @@
-const { Room, User } = require("../../models");
+const { Room, User } = require("../models");
 
 async function recommendRoom(req, res) {
   const { userId } = req.params;
