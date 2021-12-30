@@ -5,36 +5,29 @@ const jwt = require("jsonwebtoken");
 // const bcrypt = require("bcrypt");
 
 // sign-up
-async function CreateUser(req, res) {
+async function createUser(req, res) {
   try {
-    const { email, password, passwordConfirm, nick } = req.body;
+    const { username, password, passwordConfirm, nick, category } = req.body;
 
     // 공백 확인
     if (
-      email === "" ||
+      username === "" ||
       password === "" ||
       passwordConfirm === "" ||
-      nick === ""
+      nick === "" ||
+      category === ""
     ) {
       return res.status(412).send({
         msg: "빠짐 없이 입력해주세요.",
       });
     }
 
-    // 이메일 양식 확인
-    const emailForm =
-      /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
-    if (emailForm.test(email) !== true) {
-      return res.status(400).send({
-        msg: "이메일 형식으로 입력해주세요.",
-      });
-    }
     // 암호화 추가하기
 
-    // 패스워드 양식 확인
-    if (password.length < 6 == true) {
+    const pwForm = /^[a-zA-Z0-9]{6,12}$/;
+    if (pwForm.test(password) !== true) {
       return res.status(400).send({
-        msg: "패스워드는 6자 이상으로 입력해주세요.",
+        msg: "패스워드 양식에 맞춰 작성바랍니다.",
       });
     }
 
@@ -48,7 +41,7 @@ async function CreateUser(req, res) {
     // 이미 동일 정보가 있을 경우
     const existUsers = await User.findAll({
       where: {
-        [Op.or]: [{ email }],
+        [Op.or]: [{ username }],
       },
     });
     if (existUsers.length) {
@@ -58,7 +51,7 @@ async function CreateUser(req, res) {
     }
 
     // 회원가입 정보를 db에 저장
-    await User.create({ email, nick, password });
+    await User.create({ username, nick, password, category });
     return res.status(201).send({}); // post created 201 반환
   } catch (err) {
     console.log(err);
@@ -69,13 +62,13 @@ async function CreateUser(req, res) {
 }
 
 // login
-async function Login(req, res) {
+async function login(req, res) {
   try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ where: { email, password } }); // user 조회, findOne 사용 가능, 이메일과 패스워드가 둘 다 맞아야함
+    const { username, password } = req.body;
+    const user = await User.findOne({ where: { username, password } }); // user 조회, findOne 사용 가능, 이메일과 패스워드가 둘 다 맞아야함
 
     // 공백 확인
-    if (email === "" || password === "") {
+    if (username === "" || password === "") {
       return res.status(412).send({
         msg: "빠짐 없이 입력해주세요.",
       });
@@ -102,6 +95,6 @@ async function Login(req, res) {
 }
 
 module.exports = {
-  CreateUser,
-  Login,
+  createUser,
+  login,
 };
