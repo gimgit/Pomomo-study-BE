@@ -62,7 +62,7 @@ async function createUser(req, res) {
     }
 
     await User.create({ username, nick, password, category });
-    return res.status(201).send({}); // post created 201 반환
+    return res.status(201).send(); // post created 201 반환
   } catch (err) {
     console.log(err);
     return res.status(400).send({

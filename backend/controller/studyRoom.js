@@ -110,8 +110,8 @@ async function catRecommend(req, res) {
 }
 
 async function keywordSearch(req, res) {
-  let { roomPurpose } = req.body;
-  let { userId } = req.params;
+  const { roomPurpose } = req.body;
+  const { userId } = req.params;
 
   switch (parseInt(roomPurpose)) {
     case 1:
@@ -195,6 +195,19 @@ async function keywordSearch(req, res) {
       res.status(200).send({ list: licenseTest });
       break;
   }
+}
+
+async function createRoom(req, res) {
+  const {
+    roomTittle,
+    roomPassword,
+    private,
+    purpose,
+    round,
+    studyTime,
+    recessTime,
+    openAt,
+  } = req.body;
 }
 
 module.exports = {

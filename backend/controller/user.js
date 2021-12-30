@@ -2,16 +2,33 @@ const { User, StudyTime, sequelize } = require("../models");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
-async function checkUserInfo(req, res) {
-  let now = new Date(Date.now() + 32400000);
-  let tomorrow = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-  let year = now.getFullYear();
-  let month = now.getMonth() + 1;
-  let date = now.getDate();
-  let nextDate = tomorrow.getDate();
-  let todayStart = `${year}-${month}-${date}T04:00:00.000Z`;
-  let todayEnd = `${year}-${month}-${nextDate}T03:59:59.000Z`;
+let now = new Date(Date.now() + 32400000);
+let tomorrow = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+let year = now.getFullYear();
+let month = now.getMonth() + 1;
+let date = now.getDate();
+let nextDate = tomorrow.getDate();
 
+let yesterday = now.getDate() - 1;
+// mvp : 오늘 공부시간 00시 기준으로 초기화
+
+let todayStart;
+let todayEnd;
+
+let a = new Date().getHours();
+a < 4
+  ? (todayStart = `${year}-${month}-${yesterday}T04:00:00.000Z`)
+  : console.log("4시 이전");
+a < 4
+  ? (todayEnd = `${year}-${month}-${date}T04:00:00.000Z`)
+  : console.log("4시 이전");
+
+console.log(now);
+console.log(a);
+console.log(todayStart);
+console.log(todayEnd);
+
+async function checkUserInfo(req, res) {
   const { userId } = req.params;
 
   try {
