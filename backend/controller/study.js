@@ -45,7 +45,7 @@ async function recessTime(req, res) {
   }
 }
 
-async function recordStudyTime(req, res) {
+async function addTime(req, res) {
   const { userId } = req.params;
   const { purpose, studyTime } = req.body;
   try {
@@ -61,5 +61,5 @@ async function recordStudyTime(req, res) {
 }
 
 module.exports = {
-  recordStudyTime,
+  addTime,
 };
