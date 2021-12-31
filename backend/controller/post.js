@@ -5,13 +5,15 @@ const jwt = require("jsonwebtoken");
 
 //post posts
 async function postBoard(req, res) {
-  const username = res.locals.user;
-  console.log(res.locals);
+  const nick = res.locals.user.nick;
+  console.log(res.locals.user.nick);
   const { postContent, studyTime, postImg } = req.body;
   console.log(postContent);
   try {
-    await Post.create({ username, postContent, studyTime, postImg });
-    return res.status(201).send(ok);
+    await Post.create({ nick, postContent, studyTime, postImg });
+    return res.status(201).send({
+      msg: "ok",
+    });
   } catch (err) {
     return res.status(400).send(console.log(err));
   }
