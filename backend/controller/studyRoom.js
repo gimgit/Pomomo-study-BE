@@ -14,7 +14,7 @@ async function allRoomList(req, res) {
   }
 }
 
-async function catRecommend(req, res) {
+async function recommendList(req, res) {
   const { userId } = req.params;
   const Usertype = await User.findOne({
     where: { userId: userId },
@@ -122,7 +122,7 @@ async function catRecommend(req, res) {
   }
 }
 
-async function keywordSearch(req, res) {
+async function keywordList(req, res) {
   const { roomPurpose } = req.body;
   const { userId } = req.params;
 
@@ -237,10 +237,32 @@ async function createRoom(req, res) {
     recessTime,
     openAt,
   } = req.body;
+
+  if (!roomPassword) {
+    return res.status(400).send({
+      msg: "룸 패스워드를 입력하세요",
+    });
+  }
+  let openAtTime = new Date(Date.now() + openAt * 60 * 1000);
+
+  await Room.create({
+    roomTittle,
+    roomPassword,
+    private,
+    purpose,
+    round,
+    studyTime,
+    recessTime,
+    openAt: openAtTime,
+  });
 }
 
+// 5 * 60 * 1000
+// isprivate 1 => private
+
 module.exports = {
-  catRecommend,
-  keywordSearch,
+  recommendList,
+  keywordList,
   allRoomList,
+  createRoom,
 };
