@@ -1,6 +1,19 @@
 const { Room, User, PersonInRoom } = require("../models");
 const { Op } = require("sequelize");
 
+async function allRoomList(req, res) {
+  try {
+    const allRoom = await Room.findAll({
+      attributes: { exclude: ["roomPassword"] },
+    });
+    return res.status(200).send({ list: allRoom });
+  } catch (err) {
+    return res
+      .status(400)
+      .send({ msg: "요청한 데이터 형식이 올바르지 않습니다." });
+  }
+}
+
 async function catRecommend(req, res) {
   const { userId } = req.params;
   const Usertype = await User.findOne({
@@ -115,7 +128,7 @@ async function keywordSearch(req, res) {
 
   switch (parseInt(roomPurpose)) {
     case 1:
-      console.log("고입");
+      console.log("자율학습");
       const highschoolEnter = await Room.findAll({
         where: { purpose: roomPurpose },
         attributes: { exclude: ["roomPassword"] },
@@ -131,7 +144,7 @@ async function keywordSearch(req, res) {
       res.status(200).send({ list: highschoolEnter });
       break;
     case 2:
-      console.log("내신");
+      console.log("시험");
       const exam = await Room.findAll({
         where: { purpose: roomPurpose },
         attributes: { exclude: ["roomPassword"] },
@@ -163,7 +176,7 @@ async function keywordSearch(req, res) {
       res.status(200).send({ list: collegeEnter });
       break;
     case 4:
-      console.log("공시");
+      console.log("자격증");
       const civilService = await Room.findAll({
         where: { purpose: roomPurpose },
         attributes: { exclude: ["roomPassword"] },
@@ -179,7 +192,7 @@ async function keywordSearch(req, res) {
       res.status(200).send({ list: civilService });
       break;
     case 5:
-      console.log("자격증");
+      console.log("공시");
       const licenseTest = await Room.findAll({
         where: { purpose: roomPurpose },
         attributes: { exclude: ["roomPassword"] },
@@ -193,6 +206,22 @@ async function keywordSearch(req, res) {
         ],
       });
       res.status(200).send({ list: licenseTest });
+      break;
+    case 6:
+      console.log("독서");
+      const readBook = await Room.findAll({
+        where: { purpose: roomPurpose },
+        attributes: { exclude: ["roomPassword"] },
+        include: [
+          {
+            model: PersonInRoom,
+            as: "peopleInRoom",
+            attributes: ["userId", "createdAt"],
+            raw: true,
+          },
+        ],
+      });
+      res.status(200).send({ list: readBook });
       break;
   }
 }
@@ -213,4 +242,5 @@ async function createRoom(req, res) {
 module.exports = {
   catRecommend,
   keywordSearch,
+  allRoomList,
 };

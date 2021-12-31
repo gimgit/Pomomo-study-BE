@@ -2,34 +2,32 @@ const { User, StudyTime, sequelize } = require("../models");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
-let now = new Date(Date.now() + 32400000);
-let tomorrow = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-let year = now.getFullYear();
-let month = now.getMonth() + 1;
-let date = now.getDate();
-let nextDate = tomorrow.getDate();
-
-let yesterday = now.getDate() - 1;
-// mvp : 오늘 공부시간 00시 기준으로 초기화
-
-let todayStart;
-let todayEnd;
-
-let a = new Date().getHours();
-a < 4
-  ? (todayStart = `${year}-${month}-${yesterday}T04:00:00.000Z`)
-  : console.log("4시 이전");
-a < 4
-  ? (todayEnd = `${year}-${month}-${date}T04:00:00.000Z`)
-  : console.log("4시 이전");
-
-console.log(now);
-console.log(a);
-console.log(todayStart);
-console.log(todayEnd);
+let [today, tomorrow, yesterday] = [
+  new Date(Date.now() + 32400000),
+  new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+  new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+];
+let [year, month, date] = [
+  today.getFullYear(),
+  today.getMonth() + 1,
+  today.getDate(),
+];
+let [nextDate, dayBefore] = [tomorrow.getDate(), yesterday.getDate()];
 
 async function checkUserInfo(req, res) {
   const { userId } = req.params;
+  let todayStart;
+  let todayEnd;
+
+  let isDawn = new Date().getHours();
+  console.log(isDawn);
+  isDawn < 4
+    ? (todayStart = `${year}-${month}-${dayBefore}T04:00:00.000Z`)
+    : (todayStart = `${year}-${month}-${date}T04:00:00.000Z`);
+  isDawn < 4
+    ? (todayEnd = `${year}-${month}-${date}T04:00:00.000Z`)
+    : (todayEnd = `${year}-${month}-${nextDate}T04:00:00.000Z`);
+  // 4시를 기점으로 오늘 공부시간 가져오는 기준시간 달라짐
 
   try {
     const userInfo = await User.findAll({
@@ -49,8 +47,7 @@ async function checkUserInfo(req, res) {
       },
       attributes: [[sequelize.fn("sum", sequelize.col("studyTime")), "today"]],
     });
-    console.log(now);
-    console.log(tomorrow);
+
     console.log(todayStart);
     console.log(todayEnd);
     return res.status(200).json({
