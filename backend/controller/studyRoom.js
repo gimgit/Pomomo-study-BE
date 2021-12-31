@@ -309,18 +309,19 @@ async function enterRoom(req, res) {
       msg: "존재하지 않는 방입니다.",
     });
 
-  if (peopleCount.length > 6)
+  if (peopleCount.length > 6) {
     return res.status(400).send({
       msg: "6명 초과",
     });
-
-  try {
-    await PersonInRoom.create({ userId, roomId });
-    return res.status(201).send({ msg: "입장 완료" });
-  } catch (err) {
-    return res.status(400).send({
-      msg: "요청한 데이터 형식이 올바르지 않습니다",
-    });
+  } else {
+    try {
+      await PersonInRoom.create({ userId, roomId });
+      return res.status(201).send({ msg: "입장 완료" });
+    } catch (err) {
+      return res.status(400).send({
+        msg: "요청한 데이터 형식이 올바르지 않습니다",
+      });
+    }
   }
 }
 

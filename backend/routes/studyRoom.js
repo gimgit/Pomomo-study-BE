@@ -8,6 +8,6 @@ router.get("/:userId/list/recommend", studyRoomCtl.recommendList);
 router.get("/list/all", studyRoomCtl.allRoomList);
 router.post("/:userId/createRoom", studyRoomCtl.createRoom);
 router.post("/:userId/enterRoom/:roomId", studyRoomCtl.enterRoom);
-router.post("/:userId/exitRoom/:roomId", studyRoomCtl.exitRoom);
+router.delete("/:userId/exitRoom/:roomId", studyRoomCtl.exitRoom);
 
 module.exports = router;
