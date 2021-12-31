@@ -5,6 +5,14 @@ async function allRoomList(req, res) {
   try {
     const allRoom = await Room.findAll({
       attributes: { exclude: ["roomPassword"] },
+      include: [
+        {
+          model: PersonInRoom,
+          as: "peopleInRoom",
+          attributes: ["userId", "createdAt"],
+          raw: true,
+        },
+      ],
     });
     return res.status(200).send({ list: allRoom });
   } catch (err) {
@@ -238,7 +246,7 @@ async function createRoom(req, res) {
     openAt,
   } = req.body;
 
-  const existRoom = await Room.findAll({
+  let existRoom = await Room.findAll({
     where: { roomTittle: roomTittle },
   });
   if (existRoom.length) {
@@ -276,9 +284,73 @@ async function createRoom(req, res) {
   }
 }
 
+async function enterRoom(req, res) {
+  const { roomId, userId } = req.params;
+
+  let [existRoom, existUser, peopleCount] = [
+    await Room.findOne({
+      where: { roomId: roomId },
+    }),
+    await PersonInRoom.findOne({
+      where: { roomId: roomId, userId: userId },
+    }),
+    await PersonInRoom.findAll({
+      where: { roomId: roomId },
+      raw: true,
+    }),
+  ];
+  if (existUser)
+    return res.status(400).send({
+      msg: "이미 입장한 방입니다.",
+    });
+
+  if (!existRoom)
+    return res.status(400).send({
+      msg: "존재하지 않는 방입니다.",
+    });
+
+  if (peopleCount.length > 6)
+    return res.status(400).send({
+      msg: "6명 초과",
+    });
+
+  try {
+    await PersonInRoom.create({ userId, roomId });
+    return res.status(201).send({ msg: "입장 완료" });
+  } catch (err) {
+    return res.status(400).send({
+      msg: "요청한 데이터 형식이 올바르지 않습니다",
+    });
+  }
+}
+
+async function exitRoom(req, res) {
+  const { roomId, userId } = req.params;
+  let exitRoom = await PersonInRoom.findOne({
+    where: { roomId: roomId, userId: userId },
+    raw: true,
+  });
+  if (!exitRoom)
+    return res
+      .status(400)
+      .send({ msg: "요청한 데이터 형식이 올바르지 않습니다" });
+  try {
+    await PersonInRoom.destroy({
+      where: { userId: userId, roomId: roomId },
+    });
+    return res.status(201).send({ msg: "퇴장 완료" });
+  } catch (err) {
+    return res.status(400).send({
+      msg: "요청한 데이터 형식이 올바르지 않습니다",
+    });
+  }
+}
+
 module.exports = {
   recommendList,
   keywordList,
   allRoomList,
   createRoom,
+  enterRoom,
+  exitRoom,
 };

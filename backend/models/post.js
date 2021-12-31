@@ -11,7 +11,7 @@ module.exports = class Post extends Sequelize.Model {
           autoIncrement: true,
           type: Sequelize.INTEGER,
         },
-        postTittle: {
+        nick: {
           type: Sequelize.STRING,
           allowNull: false,
         },
@@ -22,6 +22,10 @@ module.exports = class Post extends Sequelize.Model {
         postImg: {
           type: Sequelize.STRING,
           allowNull: true,
+        },
+        studyTime: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
         },
       },
       {

@@ -75,8 +75,10 @@ async function createUser(req, res) {
 async function login(req, res) {
   try {
     const { username, password } = req.body;
-    const user = await User.findOne({ where: { username, password } }); // user 조회, findOne 사용 가능, 이메일과 패스워드가 둘 다 맞아야함
-
+    const user = await User.findOne({
+      attributes: { exclude: ["password"] },
+      where: { username, password },
+    }); // user 조회, findOne 사용 가능, 이메일과 패스워드가 둘 다 맞아야함
     // 공백 확인
     if (username === "" || password === "") {
       return res.status(412).send({
@@ -91,11 +93,14 @@ async function login(req, res) {
       });
     }
     // user 정보 일치
-    const token = jwt.sign({ userId: user.userId }, process.env.SECRET_KEY);
+    // const token = jwt.sign({ username: user.nick }, process.env.SECRET_KEY);
+    const token = jwt.sign(
+      { userId: user.userId, userNick: user.nick },
+      process.env.SECRET_KEY
+    );
     return res.send({
       token,
     });
-    console.log(token);
   } catch (err) {
     console.log(err);
     return res.status(400).send({
