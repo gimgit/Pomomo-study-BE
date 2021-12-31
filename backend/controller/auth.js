@@ -101,16 +101,13 @@ async function login(req, res) {
         msg: "이메일 또는 패스워드가 잘못됐습니다.",
       });
     }
+    const nick = user.nick;
     // user 정보 일치
-    // const token = jwt.sign({ username: user.nick }, process.env.SECRET_KEY);
-    const token = jwt.sign(
-      { userId: user.userId, userNick: user.nick },
-      process.env.SECRET_KEY
-    );
+    const token = jwt.sign({ username: user.username }, process.env.SECRET_KEY);
     return res.send({
       token,
+      nick,
     });
-    console.log(token);
   } catch (err) {
     console.log(err);
     return res.status(400).send({
