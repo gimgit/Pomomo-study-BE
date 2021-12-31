@@ -3,7 +3,7 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
 let [today, tomorrow, yesterday] = [
-  new Date(Date.now() + 32400000),
+  new Date(Date.now() + 9 * 60 * 60 * 1000),
   new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
   new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
 ];

@@ -1,7 +1,7 @@
-const { StudyTime } = require("../models");
+const { StudyTime, Room, PersonInRoom } = require("../models");
 
 async function startPomodoro(req, res) {
-  const { userId } = req.params;
+  const { roomId } = req.params;
   const { purpose, studyTime } = req.body;
   try {
     await StudyTime.create({
