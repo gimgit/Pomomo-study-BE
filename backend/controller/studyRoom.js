@@ -238,27 +238,43 @@ async function createRoom(req, res) {
     openAt,
   } = req.body;
 
-  if (!roomPassword) {
-    return res.status(400).send({
-      msg: "룸 패스워드를 입력하세요",
-    });
+  const existRoom = await Room.findAll({
+    where: { roomTittle: roomTittle },
+  });
+  if (existRoom.length) {
+    return res.status(400).send({ msg: "방이름이 중복됩니다" });
   }
+
+  if (parseInt(private) === 0) {
+    if (roomPassword) {
+      return res
+        .status(400)
+        .send({ msg: "공개방에는 비밀번호를 입력하지 않습니다" });
+    }
+  } else if (parseInt(private) === 1) {
+    if (roomPassword.length < 4) {
+      return res.status(400).send({ msg: "비밀번호는 4글자 이상입니다." });
+    }
+  }
+
   let openAtTime = new Date(Date.now() + openAt * 60 * 1000);
 
-  await Room.create({
-    roomTittle,
-    roomPassword,
-    private,
-    purpose,
-    round,
-    studyTime,
-    recessTime,
-    openAt: openAtTime,
-  });
+  try {
+    await Room.create({
+      roomTittle,
+      roomPassword,
+      private,
+      purpose,
+      round,
+      studyTime,
+      recessTime,
+      openAt: openAtTime,
+    });
+    return res.status(200).send({ msg: "완료" });
+  } catch (err) {
+    res.status(400).send({ msg: "요청한 데이터 형식이 올바르지 않습니다." });
+  }
 }
-
-// 5 * 60 * 1000
-// isprivate 1 => private
 
 module.exports = {
   recommendList,
