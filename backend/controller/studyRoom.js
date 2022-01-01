@@ -1,19 +1,34 @@
 const { Room, User, PersonInRoom } = require("../models");
-const { Op } = require("sequelize");
+const Sequelize = require("sequelize");
+const Op = Sequelize.Op;
+// const Sequelize = require("sequelize");
+// const { Op, Sequelize } = require("sequelize");
 
 async function allRoomList(req, res) {
+  // const userList = await Room.findAll({
+  //   attributes: ["roomId"],
+  //   include: [
+  //     {
+  //       model: PersonInRoom,
+  //       as: "peopleInRoom",
+  //       attributes: ["userId", "createdAt"],
+  //       raw: true,
+  //     },
+  //   ],
+  // });
+
+  const allRoom = await Room.findAll({
+    attributes: { exclude: ["roomPassword"] },
+    include: [
+      {
+        model: PersonInRoom,
+        as: "peopleInRoom",
+        attributes: ["userId", "createdAt"],
+        raw: true,
+      },
+    ],
+  });
   try {
-    const allRoom = await Room.findAll({
-      attributes: { exclude: ["roomPassword"] },
-      include: [
-        {
-          model: PersonInRoom,
-          as: "peopleInRoom",
-          attributes: ["userId", "createdAt"],
-          raw: true,
-        },
-      ],
-    });
     return res.status(200).send({ list: allRoom });
   } catch (err) {
     return res
@@ -244,6 +259,7 @@ async function createRoom(req, res) {
     studyTime,
     recessTime,
     openAt,
+    isFull,
   } = req.body;
 
   let existRoom = await Room.findAll({
@@ -277,6 +293,7 @@ async function createRoom(req, res) {
       studyTime,
       recessTime,
       openAt: openAtTime,
+      isFull,
     });
     return res.status(200).send({ msg: "완료" });
   } catch (err) {
@@ -299,6 +316,7 @@ async function enterRoom(req, res) {
       raw: true,
     }),
   ];
+
   if (existUser)
     return res.status(400).send({
       msg: "이미 입장한 방입니다.",
@@ -309,7 +327,7 @@ async function enterRoom(req, res) {
       msg: "존재하지 않는 방입니다.",
     });
 
-  if (peopleCount.length > 6) {
+  if (peopleCount.length > 5) {
     return res.status(400).send({
       msg: "6명 초과",
     });

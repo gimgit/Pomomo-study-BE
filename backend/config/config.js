@@ -7,9 +7,13 @@ module.exports = {
     database: "pomomoDB",
     host: process.env.MYSQL_HOST,
     dialect: "mysql",
-    timezone: "+09:00", // DB에 저장할 때 시간 설정
+    timezone: "+09:00",
     dialectOptions: {
-      timezone: "+09:00", // DB에서 가져올 때 시간 설정
+      // timezone: "+09:00",
+      charset: "utf8mb4",
+      dateStrings: true,
+      typeCast: true,
+      // useUTC: false,
     },
   },
   test: {

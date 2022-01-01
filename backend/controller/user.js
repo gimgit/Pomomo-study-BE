@@ -2,6 +2,8 @@ const { User, StudyTime, sequelize } = require("../models");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
+//1~3sequelize check
+
 let [today, tomorrow, yesterday] = [
   new Date(Date.now() + 9 * 60 * 60 * 1000),
   new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
