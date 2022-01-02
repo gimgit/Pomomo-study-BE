@@ -17,7 +17,6 @@ let [year, month, date] = [
 let [nextDate, dayBefore] = [tomorrow.getDate(), yesterday.getDate()];
 
 async function checkUserInfo(req, res) {
-  console.log(res.locals.user.userId);
   const userId = res.locals.user.userId;
   let todayStart;
   let todayEnd;
@@ -72,11 +71,10 @@ async function updateUserInfo(req, res) {
       where: { userId: userId },
     });
     if (!userInfo) return res.status(400).send("err");
-
-    await User.update(
-      { category: category, nick: nick },
-      { where: { userId: userId } }
-    );
+    let userNewInfo = {};
+    if (nick) userNewInfo.nick = nick;
+    if (category) userNewInfo.category = category;
+    await User.update(userNewInfo, { where: { userId: userId } });
     return res.status(201).send({ msg: "수정완료!" });
   } catch (err) {
     return res.status(400).send({
@@ -84,7 +82,6 @@ async function updateUserInfo(req, res) {
     });
   }
 }
-
 async function updateUserStatus(req, res) {
   const { userId } = req.params;
   const { statusMsg } = req.body;
