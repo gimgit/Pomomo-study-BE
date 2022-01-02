@@ -1,14 +1,14 @@
 const authRouter = require("./auth");
 const userRouter = require("./user");
 const studyRoomRouter = require("./studyRoom");
-const studyRouter = require("./study");
+const studyRouter = require("./studyTimer");
 
 const router = require("express").Router();
 
 router.use("/auth", authRouter);
 router.use("/users", userRouter);
 router.use("/studyRoom", studyRoomRouter);
-router.use("/study", studyRouter);
+router.use("/studyTimer", studyRouter);
 
 module.exports = router;
 

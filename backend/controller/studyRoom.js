@@ -1,8 +1,6 @@
 const { Room, User, PersonInRoom } = require("../models");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
-// const Sequelize = require("sequelize");
-// const { Op, Sequelize } = require("sequelize");
 
 async function allRoomList(req, res) {
   // const userList = await Room.findAll({
@@ -343,21 +341,48 @@ async function enterRoom(req, res) {
   }
 }
 
+async function reconnectRoom(req, res) {}
+
 async function exitRoom(req, res) {
   const { roomId, userId } = req.params;
-  let exitRoom = await PersonInRoom.findOne({
-    where: { roomId: roomId, userId: userId },
-    raw: true,
-  });
+  let [exitRoom, peopleCount] = [
+    await PersonInRoom.findOne({
+      where: { roomId: roomId, userId: userId },
+      raw: true,
+    }),
+    await PersonInRoom.findAll({
+      where: { roomId: roomId },
+      raw: true,
+    }),
+  ];
   if (!exitRoom)
     return res
       .status(400)
       .send({ msg: "요청한 데이터 형식이 올바르지 않습니다" });
   try {
-    await PersonInRoom.destroy({
-      where: { userId: userId, roomId: roomId },
-    });
-    return res.status(201).send({ msg: "퇴장 완료" });
+    switch (parseInt(peopleCount.length)) {
+      case 1:
+        console.log(`마지막 ${userId}번 사용자 퇴장`);
+        await PersonInRoom.destroy({
+          where: { userId: userId, roomId: roomId },
+        });
+        await Room.destroy({
+          where: { roomId: roomId },
+        });
+        res.status(201).send({ msg: "마지막 유저 퇴장, 방 삭제" });
+        break;
+      case 2:
+      case 3:
+      case 4:
+      case 5:
+      case 6:
+        console.log(`${userId}번 사용자 퇴장`);
+        await PersonInRoom.destroy({
+          where: { userId: userId, roomId: roomId },
+        });
+        res.status(201).send({ msg: "퇴장 완료" });
+        break;
+    }
   } catch (err) {
     return res.status(400).send({
       msg: "요청한 데이터 형식이 올바르지 않습니다",
@@ -371,5 +396,6 @@ module.exports = {
   allRoomList,
   createRoom,
   enterRoom,
+  reconnectRoom,
   exitRoom,
 };

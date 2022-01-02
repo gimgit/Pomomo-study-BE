@@ -17,19 +17,19 @@ let [year, month, date] = [
 let [nextDate, dayBefore] = [tomorrow.getDate(), yesterday.getDate()];
 
 async function checkUserInfo(req, res) {
-  const { userId } = req.params;
+  console.log(res.locals.user.userId);
+  const userId = res.locals.user.userId;
   let todayStart;
   let todayEnd;
 
   let isDawn = new Date().getHours();
-  console.log(isDawn);
   isDawn < 4
     ? (todayStart = `${year}-${month}-${dayBefore}T04:00:00.000Z`)
     : (todayStart = `${year}-${month}-${date}T04:00:00.000Z`);
   isDawn < 4
     ? (todayEnd = `${year}-${month}-${date}T04:00:00.000Z`)
     : (todayEnd = `${year}-${month}-${nextDate}T04:00:00.000Z`);
-  // 4시를 기점으로 오늘 공부시간 가져오는 기준시간 달라짐
+  // 4시를 기점으로 오늘 공부시간 가져오는 기준일자 달라짐
 
   try {
     const userInfo = await User.findAll({
