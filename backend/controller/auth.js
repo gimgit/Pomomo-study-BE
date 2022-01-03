@@ -74,6 +74,7 @@ async function createUser(req, res) {
 // login
 async function login(req, res) {
   try {
+    console.log("2");
     const { username, password } = req.body;
     const user = await User.findOne({
       attributes: { exclude: ["password"] },

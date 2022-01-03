@@ -32,45 +32,80 @@ async function syncTimer(req, res) {
     endPoints.push(startPoints[i] + timer.studyTime * 60 * 1000);
   }
 
-  startPoints.forEach((e) => {
-    console.log(new Date(e));
-  });
-  endPoints.forEach((e) => {
-    console.log(new Date(e));
-  });
+  // startPoints.forEach((e) => {
+  //   console.log(new Date(e));
+  // });
+  // endPoints.forEach((e) => {
+  //   console.log(new Date(e));
+  // });
 
   //라운드 시작까지 얼마나 남았는지 표시
-  let [startPoint, endPoint] = [
-    // Date.now() + 9 * 60 * 60 * 1000,
-    startPoints,
-    // openAt.getTime() + 9 * 60 * 60 * 1000,
-    openAt.getTime() + 9 * 60 * 60 * 1000 + timer.studyTime * 60 * 1000,
-  ];
-  console.log(new Date(Date.now()));
+  // let [startPoint, endPoint] = [
+  //   // Date.now() + 9 * 60 * 60 * 1000,
+  //   startPoints,
+  //   // openAt.getTime() + 9 * 60 * 60 * 1000,
+  //   openAt.getTime() + 9 * 60 * 60 * 1000 + timer.studyTime * 60 * 1000,
+  // ];
+  // console.log(new Date(Date.now()));
 
   // let [currentTime, startPoint, endPoint] = [
   //   Date.now(),
   //   new Date(new Date(openAt) + 0),
   //   new Date(openAt).getTime() + minutePerRound * 60 * 1000,
   // ];
-  let i = 0;
+
+  // 핵심
+  // let i = 0;
+  // let stage =
+  //   (startPoints[0] - now) / 60 / 1000 / (timer.studyTime + timer.recessTime);
+  // console.log(stage);
+  // do {
+  //   switch ((startPoints[i] - now) / 60 / 1000 < 0) {
+  //     case true:
+  //       console.log(
+  //         `다음라운드는 ${(startPoints[i + 1] - now) / 60 / 1000}후에 시작`
+  //       );
+  //       break;
+  //     case false:
+  //       console.log(`시작 전${(startPoints[i] - now) / 60 / 1000}분 후 시작`);
+  //       break;
+  //   }
+  //   i++;
+  //   console.log(i);
+  // } while (i > parseInt(timer.round));
+
+  // let i = 0;
   let stage =
-    (startPoint[0] - now) / 60 / 1000 / (timer.studyTime + timer.recessTime);
-  console.log(stage);
-  do {
-    switch ((startPoint[i] - now) / 60 / 1000 < 0) {
-      case true:
-        console.log(
-          `다음라운드는 ${(startPoint[i + 1] - now) / 60 / 1000}후에 시작`
-        );
-        break;
-      case false:
-        console.log(`시작 전${(startPoint[i] - now) / 60 / 1000}분 후 시작`);
-        break;
-    }
-    i++;
-    console.log(i);
-  } while (i > parseInt(timer.round));
+    (startPoints[0] - now) / 60 / 1000 / (timer.studyTime + timer.recessTime);
+  // console.log(stage);
+  let i = 0;
+  let n = false;
+  // do {
+  //   // for (let i = 0; i < timer.round; i++) {
+  if ((startPoints[i] - now) / 60 / 1000 < 0) {
+    console.log(
+      `시작함, 다음라운드는 ${
+        ((startPoints[i] - now) / 60 / 1000) %
+        (timer.studyTime + timer.recessTime)
+      }후에 시작`
+    );
+  } else console.log(`시작 전 ${(startPoints[i] - now) / 60 / 1000}분 후 시작`);
+
+  //   n == true;
+  //   // }
+  //   i++;
+  // } while (n == true);
+
+  // switch ((startPoints[i] - now) / 60 / 1000 < 0) {
+  //   case true:
+  //     console.log(
+  //       `다음라운드는 ${(startPoints[i + 1] - now) / 60 / 1000}후에 시작`
+  //     );
+  //     break;
+  //   case false:
+  //     console.log(`시작 전${(startPoints[i] - now) / 60 / 1000}분 후 시작`);
+  //     break;
+  // }
 
   // for (i = 0; i <= timer.round; i++) {
   //   switch ((startPoint[i] - now) / 60 / 1000 < 0) {
@@ -86,12 +121,12 @@ async function syncTimer(req, res) {
   // }
   // if ((startPoint[0] - now) / 60 / 1000 < 0) {
   // }
-  console.log((startPoint[0] - now) / 60 / 1000);
-  console.log((startPoint[1] - now) / 60 / 1000);
+  // console.log((startPoints[0] - now) / 60 / 1000);
+  // console.log((startPoints[1] - now) / 60 / 1000);
 
-  console.log(new Date(now));
+  // console.log(new Date(now));
   // console.log(new Date(startPoint));
-  console.log(new Date(endPoint));
+  // console.log(new Date(endPoints));
 }
 
 async function endPomodoro(req, res) {
