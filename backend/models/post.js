@@ -21,7 +21,7 @@ module.exports = class Post extends Sequelize.Model {
         },
         postImg: {
           type: Sequelize.STRING,
-          allowNull: false,
+          allowNull: true,
         },
         studyTime: {
           type: Sequelize.INTEGER,
