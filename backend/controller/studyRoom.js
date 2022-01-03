@@ -131,108 +131,108 @@ async function recommendList(req, res) {
   }
 }
 
-// async function keywordList(req, res) {
-//   const { roomPurpose } = req.parmas;
+async function keywordList(req, res) {
+  const { roomPurpose } = req.parmas;
 
-//   switch (parseInt(roomPurpose)) {
-//     case 1:
-//       console.log("자율학습");
-//       const highschoolEnter = await Room.findAll({
-//         where: { purpose: roomPurpose },
-//         attributes: { exclude: ["roomPassword"] },
-//         include: [
-//           {
-//             model: PersonInRoom,
-//             as: "peopleInRoom",
-//             attributes: ["userId", "createdAt"],
-//             raw: true,
-//           },
-//         ],
-//       });
-//       res.status(200).send({ list: highschoolEnter });
-//       break;
-//     case 2:
-//       console.log("시험");
-//       const exam = await Room.findAll({
-//         where: { purpose: roomPurpose },
-//         attributes: { exclude: ["roomPassword"] },
-//         include: [
-//           {
-//             model: PersonInRoom,
-//             as: "peopleInRoom",
-//             attributes: ["userId", "createdAt"],
-//             raw: true,
-//           },
-//         ],
-//       });
-//       res.status(200).send({ list: exam });
-//       break;
-//     case 3:
-//       console.log("수능");
-//       const collegeEnter = await Room.findAll({
-//         where: { purpose: roomPurpose },
-//         attributes: { exclude: ["roomPassword"] },
-//         include: [
-//           {
-//             model: PersonInRoom,
-//             as: "peopleInRoom",
-//             attributes: ["userId", "createdAt"],
-//             raw: true,
-//           },
-//         ],
-//       });
-//       res.status(200).send({ list: collegeEnter });
-//       break;
-//     case 4:
-//       console.log("자격증");
-//       const civilService = await Room.findAll({
-//         where: { purpose: roomPurpose },
-//         attributes: { exclude: ["roomPassword"] },
-//         include: [
-//           {
-//             model: PersonInRoom,
-//             as: "peopleInRoom",
-//             attributes: ["userId", "createdAt"],
-//             raw: true,
-//           },
-//         ],
-//       });
-//       res.status(200).send({ list: civilService });
-//       break;
-//     case 5:
-//       console.log("공시");
-//       const licenseTest = await Room.findAll({
-//         where: { purpose: roomPurpose },
-//         attributes: { exclude: ["roomPassword"] },
-//         include: [
-//           {
-//             model: PersonInRoom,
-//             as: "peopleInRoom",
-//             attributes: ["userId", "createdAt"],
-//             raw: true,
-//           },
-//         ],
-//       });
-//       res.status(200).send({ list: licenseTest });
-//       break;
-//     case 6:
-//       console.log("독서");
-//       const readBook = await Room.findAll({
-//         where: { purpose: roomPurpose },
-//         attributes: { exclude: ["roomPassword"] },
-//         include: [
-//           {
-//             model: PersonInRoom,
-//             as: "peopleInRoom",
-//             attributes: ["userId", "createdAt"],
-//             raw: true,
-//           },
-//         ],
-//       });
-//       res.status(200).send({ list: readBook });
-//       break;
-//   }
-// }
+  switch (parseInt(roomPurpose)) {
+    case 1:
+      console.log("자율학습");
+      const highschoolEnter = await Room.findAll({
+        where: { purpose: roomPurpose },
+        attributes: { exclude: ["roomPassword"] },
+        include: [
+          {
+            model: PersonInRoom,
+            as: "peopleInRoom",
+            attributes: ["userId", "createdAt"],
+            raw: true,
+          },
+        ],
+      });
+      res.status(200).send({ list: highschoolEnter });
+      break;
+    case 2:
+      console.log("시험");
+      const exam = await Room.findAll({
+        where: { purpose: roomPurpose },
+        attributes: { exclude: ["roomPassword"] },
+        include: [
+          {
+            model: PersonInRoom,
+            as: "peopleInRoom",
+            attributes: ["userId", "createdAt"],
+            raw: true,
+          },
+        ],
+      });
+      res.status(200).send({ list: exam });
+      break;
+    case 3:
+      console.log("수능");
+      const collegeEnter = await Room.findAll({
+        where: { purpose: roomPurpose },
+        attributes: { exclude: ["roomPassword"] },
+        include: [
+          {
+            model: PersonInRoom,
+            as: "peopleInRoom",
+            attributes: ["userId", "createdAt"],
+            raw: true,
+          },
+        ],
+      });
+      res.status(200).send({ list: collegeEnter });
+      break;
+    case 4:
+      console.log("자격증");
+      const civilService = await Room.findAll({
+        where: { purpose: roomPurpose },
+        attributes: { exclude: ["roomPassword"] },
+        include: [
+          {
+            model: PersonInRoom,
+            as: "peopleInRoom",
+            attributes: ["userId", "createdAt"],
+            raw: true,
+          },
+        ],
+      });
+      res.status(200).send({ list: civilService });
+      break;
+    case 5:
+      console.log("공시");
+      const licenseTest = await Room.findAll({
+        where: { purpose: roomPurpose },
+        attributes: { exclude: ["roomPassword"] },
+        include: [
+          {
+            model: PersonInRoom,
+            as: "peopleInRoom",
+            attributes: ["userId", "createdAt"],
+            raw: true,
+          },
+        ],
+      });
+      res.status(200).send({ list: licenseTest });
+      break;
+    case 6:
+      console.log("독서");
+      const readBook = await Room.findAll({
+        where: { purpose: roomPurpose },
+        attributes: { exclude: ["roomPassword"] },
+        include: [
+          {
+            model: PersonInRoom,
+            as: "peopleInRoom",
+            attributes: ["userId", "createdAt"],
+            raw: true,
+          },
+        ],
+      });
+      res.status(200).send({ list: readBook });
+      break;
+  }
+}
 
 async function createRoom(req, res) {
   const {
@@ -380,7 +380,7 @@ async function exitRoom(req, res) {
 
 module.exports = {
   recommendList,
-  // keywordList,
+  keywordList,
   allRoomList,
   createRoom,
   enterRoom,
