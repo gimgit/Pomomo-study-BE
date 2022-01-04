@@ -4,6 +4,53 @@ const Op = Sequelize.Op;
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
+// name check
+async function nameCheck(req, res) {
+  try {
+    const { username } = req.body;
+    const nameCheck = await User.findOne({
+      where: {
+        [Op.or]: [{ username }],
+      },
+    });
+    console.log(nameCheck);
+    if (!nameCheck) {
+      return res.status(200).send({
+        result: "true",
+      });
+    } else {
+      return res.status(400).send({
+        result: "false",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+}
+// nick check
+async function nickCheck(req, res) {
+  try {
+    const { nick } = req.body;
+    const nickCheck = await User.findOne({
+      where: {
+        [Op.or]: [{ nick }],
+      },
+    });
+    if (!nickCheck) {
+      return res.status(200).send({
+        result: "true",
+      });
+    } else {
+      return res.status(400).send({
+        result: "false",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+}
 // sign-up
 async function createUser(req, res) {
   try {
@@ -38,31 +85,12 @@ async function createUser(req, res) {
       });
     }
 
-    // 이미 동일 정보가 있을 경우
-    const existUsers = await User.findAll({
-      where: {
-        [Op.or]: [{ username }],
-      },
-    });
-    if (existUsers.length) {
-      return res.status(400).send({
-        msg: "이미 가입된 아이디 또는 닉네임이 있습니다.",
-      });
-    }
-
-    const existNick = await User.findAll({
-      where: {
-        [Op.or]: [{ nick }],
-      },
-    });
-    if (existNick.length) {
-      return res.status(400).send({
-        msg: "이미 가입된 아이디 또는 닉네임이 있습니다.",
-      });
-    }
+    //비밀번호 비교 후 저장
     const hashedPass = bcrypt.hashSync(password, 5);
     await User.create({ username, nick, password: hashedPass, category });
-    return res.status(201).send(); // post created 201 반환
+    return res.status(201).send({
+      msg: "가입 성공",
+    });
   } catch (err) {
     console.log(err);
     return res.status(400).send({
@@ -116,6 +144,8 @@ async function login(req, res) {
 }
 
 module.exports = {
+  nameCheck,
+  nickCheck,
   createUser,
   login,
 };
