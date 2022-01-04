@@ -102,11 +102,11 @@ async function createUser(req, res) {
 // login
 async function login(req, res) {
   try {
+    console.log("2");
     const { username, password } = req.body;
     const user = await User.findOne({
-      where: {
-        [Op.and]: [{ username }],
-      },
+      attributes: { exclude: ["password"] },
+      where: { username, password },
     });
     // 공백 확인
     if (username === "" || password === "") {

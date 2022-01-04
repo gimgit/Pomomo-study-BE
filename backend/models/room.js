@@ -44,6 +44,10 @@ module.exports = class Room extends Sequelize.Model {
           allowNull: false,
           defaultValue: Sequelize.NOW,
         },
+        // isStarted: {
+        //   type: Sequelize.TINYINT,
+        //   defaultValue: 0,
+        // },
       },
       {
         sequelize,
@@ -52,8 +56,8 @@ module.exports = class Room extends Sequelize.Model {
         modelName: "Room",
         tableName: "Rooms",
         paranoid: false,
-        charset: "utf8",
-        collate: "utf8_general_ci",
+        charset: "utf8mb4",
+        collate: "utf8mb4_general_ci",
       }
     );
   }

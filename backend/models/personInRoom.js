@@ -3,7 +3,12 @@ const Sequelize = require("sequelize");
 module.exports = class PersonInRoom extends Sequelize.Model {
   static init(sequelize) {
     return super.init(
-      {},
+      {
+        nick: {
+          type: Sequelize.STRING,
+          allowNull: false,
+        },
+      },
       {
         sequelize,
         timestamps: true,
