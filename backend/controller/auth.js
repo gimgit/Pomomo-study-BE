@@ -74,12 +74,12 @@ async function createUser(req, res) {
 // login
 async function login(req, res) {
   try {
+    console.log("2");
     const { username, password } = req.body;
     const user = await User.findOne({
-      where: {
-        [Op.and]: [{ username }],
-      },
-    });
+      attributes: { exclude: ["password"] },
+      where: { username, password },
+    }); 
     // 공백 확인
     if (username === "" || password === "") {
       return res.status(412).send({
@@ -102,11 +102,14 @@ async function login(req, res) {
       });
     }
     // user 정보 일치
-    const token = jwt.sign({ userId: user.userId }, process.env.SECRET_KEY);
+    // const token = jwt.sign({ username: user.nick }, process.env.SECRET_KEY);
+    const token = jwt.sign(
+      { userId: user.userId, userNick: user.nick },
+      process.env.SECRET_KEY
+    );
     return res.send({
       token,
     });
-    console.log(token);
   } catch (err) {
     console.log(err);
     return res.status(400).send({

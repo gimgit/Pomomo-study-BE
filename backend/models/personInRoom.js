@@ -3,14 +3,19 @@ const Sequelize = require("sequelize");
 module.exports = class PersonInRoom extends Sequelize.Model {
   static init(sequelize) {
     return super.init(
-      {},
+      {
+        nick: {
+          type: Sequelize.STRING,
+          allowNull: false,
+        },
+      },
       {
         sequelize,
         timestamps: true,
         underscored: false,
         modelName: "PersonInRoom",
         tableName: "PersonInRooms",
-        paranoid: true,
+        paranoid: false,
         charset: "utf8",
         collate: "utf8_general_ci",
       }
