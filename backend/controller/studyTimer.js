@@ -5,6 +5,7 @@ const { StudyTime, Room, PersonInRoom } = require("../models");
 //ㅅㅐ로고침, 중간 입장한 유저 시간 동기화
 async function syncTimer(req, res) {
   const { roomId } = req.params;
+  console.log(req.params);
   const timer = await Room.findOne({
     where: { roomId },
     exclude: ["roomPassword"],

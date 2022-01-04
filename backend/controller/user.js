@@ -17,6 +17,7 @@ let [year, month, date] = [
 let [nextDate, dayBefore] = [tomorrow.getDate(), yesterday.getDate()];
 
 async function checkUserInfo(req, res) {
+  console.log;
   const userId = res.locals.user.userId;
   let todayStart;
   let todayEnd;
