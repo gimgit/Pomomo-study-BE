@@ -12,6 +12,6 @@ router.use("/users", userRouter);
 router.use("/posts", post);
 router.use("/studyRoom", studyRoomRouter);
 router.use("/posts/:postId/comments", commentRouter);
-router.use("/studyTimer", studyRouter);
+router.use("/study", studyRouter);
 
 module.exports = router;

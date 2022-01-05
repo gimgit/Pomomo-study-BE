@@ -17,7 +17,6 @@ let [year, month, date] = [
 let [nextDate, dayBefore] = [tomorrow.getDate(), yesterday.getDate()];
 
 async function checkUserInfo(req, res) {
-  console.log;
   const userId = res.locals.user.userId;
   let todayStart;
   let todayEnd;
@@ -50,9 +49,7 @@ async function checkUserInfo(req, res) {
       attributes: [[sequelize.fn("sum", sequelize.col("studyTime")), "today"]],
     });
 
-    console.log(todayStart);
-    console.log(todayEnd);
-    return res.status(200).json({
+    return res.status(200).send({
       user: userInfo,
       totalRecord: studyRecord,
       todayRecord: todayRecord,
@@ -65,7 +62,8 @@ async function checkUserInfo(req, res) {
 }
 
 async function updateUserInfo(req, res) {
-  const { userId } = req.params;
+  // const { userId } = req.params;
+  const userId = res.locals.user.userId;
   const { category, nick } = req.body;
   try {
     const userInfo = await User.findOne({
@@ -84,7 +82,8 @@ async function updateUserInfo(req, res) {
   }
 }
 async function updateUserStatus(req, res) {
-  const { userId } = req.params;
+  // const { userId } = req.params;
+  const userId = res.locals.user.userId;
   const { statusMsg } = req.body;
   try {
     const userInfo = await User.findOne({ where: { userId: userId } });
@@ -103,7 +102,8 @@ async function updateUserStatus(req, res) {
 }
 
 async function updateUserImg(req, res) {
-  const { userId } = req.params;
+  // const { userId } = req.params;
+  const userId = res.locals.user.userId;
   const { profileImg } = req.body;
   try {
     const userInfo = await User.findOne({ where: { userId: userId } });

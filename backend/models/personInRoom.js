@@ -7,6 +7,7 @@ module.exports = class PersonInRoom extends Sequelize.Model {
         nick: {
           type: Sequelize.STRING,
           allowNull: false,
+          unique: true,
         },
       },
       {

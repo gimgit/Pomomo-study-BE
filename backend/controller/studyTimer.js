@@ -1,6 +1,8 @@
 const { StudyTime, Room, PersonInRoom } = require("../models");
-// let a = getHours() + 25 * 60 * 1000;
-// console.log(a);
+
+let a = 1400 / 60;
+let b = 1400 % 60;
+console.log(`${a}:${b}`);
 
 //ㅅㅐ로고침, 중간 입장한 유저 시간 동기화
 async function syncTimer(req, res) {
@@ -130,46 +132,18 @@ async function syncTimer(req, res) {
   // console.log(new Date(endPoints));
 }
 
-async function endPomodoro(req, res) {
-  const { userId } = req.params;
-  const { purpose, studyTime } = req.body;
-  try {
-    await StudyTime.create({
-      userId: userId,
-      purpose: purpose,
-      studyTime: studyTime,
-    });
-    res.status(201).send({ msg: "작성완료" });
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-async function recessTime(req, res) {
-  const { userId } = req.params;
-  const { purpose, studyTime } = req.body;
-  try {
-    await StudyTime.create({
-      userId: userId,
-      purpose: purpose,
-      studyTime: studyTime,
-    });
-    res.status(201).send({ msg: "작성완료" });
-  } catch (err) {
-    console.log(err);
-  }
-}
-
 async function addTime(req, res) {
-  console.log("c");
-  const { userId } = req.params;
-  const { purpose, studyTime } = req.body;
+  console.log("addTime");
+  const { userId, roomId } = req.params;
+  // const { userId, roomId } = req.body;
 
+  const studyRoom = await Room.findOne({ where: { roomId: roomId } });
+  const [studyTime, roomPurpose] = [studyRoom.studyTime, studyRoom.purpose];
   try {
     await StudyTime.create({
       userId: userId,
-      purpose: purpose,
       studyTime: studyTime,
+      purpose: roomPurpose,
     });
     res.status(201).send({ msg: "작성완료" });
   } catch (err) {
