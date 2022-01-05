@@ -1,5 +1,3 @@
-require("dotenv").config();
-
 module.exports = {
   development: {
     username: "admin",
@@ -7,6 +5,14 @@ module.exports = {
     database: "pomomoDB",
     host: process.env.MYSQL_HOST,
     dialect: "mysql",
+    timezone: "+09:00",
+    dialectOptions: {
+      // timezone: "+09:00",
+      charset: "utf8mb4",
+      dateStrings: true,
+      typeCast: true,
+      // useUTC: false,
+    },
   },
   test: {
     username: "root",

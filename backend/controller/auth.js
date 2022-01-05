@@ -2,7 +2,7 @@ const { User, StudyTime, sequelize } = require("../models");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 const jwt = require("jsonwebtoken");
-// const bcrypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 
 // sign-up
 async function createUser(req, res) {
@@ -50,9 +50,19 @@ async function createUser(req, res) {
       });
     }
 
-    // 회원가입 정보를 db에 저장
-    await User.create({ username, nick, password, category });
-    return res.status(201).send({}); // post created 201 반환
+    const existNick = await User.findAll({
+      where: {
+        [Op.or]: [{ nick }],
+      },
+    });
+    if (existNick.length) {
+      return res.status(400).send({
+        msg: "이미 가입된 아이디 또는 닉네임이 있습니다.",
+      });
+    }
+    const hashedPass = bcrypt.hashSync(password, 5);
+    await User.create({ username, nick, password: hashedPass, category });
+    return res.status(201).send(); // post created 201 반환
   } catch (err) {
     console.log(err);
     return res.status(400).send({
@@ -64,14 +74,26 @@ async function createUser(req, res) {
 // login
 async function login(req, res) {
   try {
+    console.log("2");
     const { username, password } = req.body;
-    const user = await User.findOne({ where: { username, password } }); // user 조회, findOne 사용 가능, 이메일과 패스워드가 둘 다 맞아야함
+    const user = await User.findOne({
+      attributes: { exclude: ["password"] },
+      where: { username, password },
+    }); // user 조회, findOne 사용 가능, 이메일과 패스워드가 둘 다 맞아야함
 
     // 공백 확인
     if (username === "" || password === "") {
       return res.status(412).send({
         msg: "빠짐 없이 입력해주세요.",
       });
+    }
+    //암호화 비교
+    const result = bcrypt.compareSync(password, user.password);
+    if (!result) {
+      res.status(400).send({
+        msg: "이메일 또는 패스워드가 잘못됐습니다.",
+      });
+      return;
     }
 
     // user 정보 불일치
@@ -81,11 +103,14 @@ async function login(req, res) {
       });
     }
     // user 정보 일치
-    const token = jwt.sign({ userId: user.userId }, process.env.SECRET_KEY);
+    // const token = jwt.sign({ username: user.nick }, process.env.SECRET_KEY);
+    const token = jwt.sign(
+      { userId: user.userId, userNick: user.nick },
+      process.env.SECRET_KEY
+    );
     return res.send({
       token,
     });
-    console.log(token);
   } catch (err) {
     console.log(err);
     return res.status(400).send({
