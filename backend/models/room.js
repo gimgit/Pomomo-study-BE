@@ -40,9 +40,17 @@ module.exports = class Room extends Sequelize.Model {
           allowNull: false,
         },
         openAt: {
-          type: Sequelize.DATE,
+          type: Sequelize.INTEGER,
           allowNull: false,
-          defaultValue: Sequelize.NOW,
+        },
+        isStarted: {
+          type: Sequelize.TINYINT,
+          defaultValue: 0,
+        },
+        currentRound: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+          defaultValue: 0,
         },
       },
       {
