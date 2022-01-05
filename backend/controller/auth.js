@@ -13,7 +13,6 @@ async function nameCheck(req, res) {
         [Op.or]: [{ username }],
       },
     });
-    console.log(nameCheck);
     if (!nameCheck) {
       return res.status(200).send({
         result: "true",
@@ -66,15 +65,6 @@ async function createUser(req, res) {
     ) {
       return res.status(412).send({
         msg: "빠짐 없이 입력해주세요.",
-      });
-    }
-
-    // 암호화 추가하기
-
-    const pwForm = /^[a-zA-Z0-9]{6,12}$/;
-    if (pwForm.test(password) !== true) {
-      return res.status(400).send({
-        msg: "패스워드 양식에 맞춰 작성바랍니다.",
       });
     }
 
