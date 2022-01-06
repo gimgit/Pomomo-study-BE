@@ -35,10 +35,12 @@ async function postBoard(req, res) {
     const userId = res.locals.user.userId;
     const { bgtype, postContent, studyTime } = req.body;
     if (!req.file && bgtype) {
-      const postImg = bgtype;
+      //file이 아니고 orange일 때
+      const postImg = bgtype; //
 
       await Post.create({ nick, postContent, studyTime, postImg, userId });
     } else {
+      //file 일때
       const postImg = req.file.location;
       console.log(req.file.location);
 

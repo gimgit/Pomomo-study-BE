@@ -64,7 +64,6 @@ async function checkUserInfo(req, res) {
 }
 
 async function updateUserInfo(req, res) {
-  // const { userId } = req.params;
   const userId = res.locals.user.userId;
   const { category, nick } = req.body;
   try {
@@ -84,7 +83,6 @@ async function updateUserInfo(req, res) {
   }
 }
 async function updateUserStatus(req, res) {
-  // const { userId } = req.params;
   const userId = res.locals.user.userId;
   const { statusMsg } = req.body;
   try {
@@ -104,9 +102,9 @@ async function updateUserStatus(req, res) {
 }
 
 async function updateUserImg(req, res) {
-  // const { userId } = req.params;
   const userId = res.locals.user.userId;
-  const { profileImg } = req.body;
+  const profileImg = req.file.location;
+
   try {
     const userInfo = await User.findOne({ where: { userId: userId } });
     if (!userInfo)
