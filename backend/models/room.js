@@ -9,7 +9,7 @@ module.exports = class Room extends Sequelize.Model {
           unique: true,
           allowNull: false,
           autoIncrement: true,
-          type: Sequelize.INTEGER,
+          type: Sequelize.BIGINT,
         },
         roomTittle: {
           type: Sequelize.STRING,

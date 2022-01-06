@@ -245,7 +245,7 @@ async function enterRoom(req, res) {
         return res.status(201).send({ msg: "입장 완료", room: existRoom });
       } catch (err) {
         return res.status(400).send({
-          msg: "요청한 데이터 형식이 올바르지 않습니다",
+          msg: "공개방 입장: 요청한 데이터 형식이 올바르지 않습니다",
         });
       }
     case 1:
@@ -257,10 +257,10 @@ async function enterRoom(req, res) {
       } else {
         try {
           await PersonInRoom.create({ userId, roomId, nick: user.nick });
-          return res.status(201).send({ msg: "입장 완료" });
+          return res.status(201).send({ msg: "입장 완료", room: existRoom });
         } catch (err) {
           return res.status(400).send({
-            msg: "요청한 데이터 형식이 올바르지 않습니다",
+            msg: "비공개방 입장: 요청한 데이터 형식이 올바르지 않습니다",
           });
         }
       }
