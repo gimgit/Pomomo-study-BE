@@ -5,6 +5,6 @@ const studyCtl = require("../controller/studyTimer");
 const authorization = require("../middlewares/auth-middlewares");
 
 router.get("/:roomId", studyCtl.syncTimer);
-router.post("/:userId/addTime", studyCtl.addTime);
+router.post("/:roomId/users/:userId/addTime", studyCtl.addTime);
 
 module.exports = router;
