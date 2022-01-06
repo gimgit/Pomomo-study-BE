@@ -6,7 +6,7 @@ module.exports = class StudyTime extends Sequelize.Model {
       {
         purpose: {
           type: Sequelize.STRING,
-          allowNull: false,
+          allowNull: true,
         },
         studyTime: {
           type: Sequelize.INTEGER,

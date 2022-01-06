@@ -1,7 +1,6 @@
 const { Room, User, PersonInRoom } = require("../models");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
-
 async function allRoomList(req, res) {
   const allRoom = await Room.findAll({
     attributes: { exclude: ["roomPassword"] },
@@ -131,40 +130,39 @@ async function keywordList(req, res) {
 }
 
 async function createRoom(req, res) {
-  const {
-    roomTittle,
-    roomPassword,
-    private,
-    purpose,
-    round,
-    studyTime,
-    recessTime,
-    openAt,
-  } = req.body;
-
-  let existRoom = await Room.findAll({
-    where: { roomTittle: roomTittle },
-  });
-  if (existRoom.length) {
-    return res.status(400).send({ msg: "방이름이 중복됩니다" });
-  }
-
-  if (parseInt(private) === 0) {
-    if (roomPassword) {
-      return res
-        .status(400)
-        .send({ msg: "공개방에는 비밀번호를 입력하지 않습니다" });
-    }
-  } else if (parseInt(private) === 1) {
-    if (roomPassword.length < 4) {
-      return res.status(400).send({ msg: "비밀번호는 4글자 이상입니다." });
-    }
-  }
-
-  let openAtTime = Date.now() + openAt * 60 * 1000;
-  console.log(openAtTime);
-
   try {
+    const {
+      roomTittle,
+      roomPassword,
+      private,
+      purpose,
+      round,
+      studyTime,
+      recessTime,
+      openAt,
+    } = req.body;
+
+    let existRoom = await Room.findAll({
+      where: { roomTittle: roomTittle },
+    });
+    if (existRoom.length) {
+      return res.status(400).send({ msg: "방이름이 중복됩니다" });
+    }
+
+    if (parseInt(private) === 0) {
+      if (roomPassword) {
+        return res
+          .status(400)
+          .send({ msg: "공개방에는 비밀번호를 입력하지 않습니다" });
+      }
+    } else if (parseInt(private) === 1) {
+      if (roomPassword.length < 4) {
+        return res.status(400).send({ msg: "비밀번호는 4글자 이상입니다." });
+      }
+    }
+
+    let openAtTime = Date.now() + openAt * 60 * 1000;
+    console.log(openAtTime);
     const newRoom = await Room.create({
       roomTittle,
       roomPassword,
@@ -175,6 +173,7 @@ async function createRoom(req, res) {
       recessTime,
       openAt: openAtTime,
     });
+
     return res.status(200).send({ msg: "완료", newRoomId: newRoom.roomId });
   } catch (err) {
     res.status(400).send({ msg: "요청한 데이터 형식이 올바르지 않습니다." });
@@ -227,7 +226,7 @@ async function enterRoom(req, res) {
         return res.status(201).send({ msg: "입장 완료", room: existRoom });
       } catch (err) {
         return res.status(400).send({
-          msg: "요청한 데이터 형식이 올바르지 않습니다",
+          msg: "공개방 입장: 요청한 데이터 형식이 올바르지 않습니다",
         });
       }
     case 1:
@@ -242,7 +241,7 @@ async function enterRoom(req, res) {
           return res.status(201).send({ msg: "입장 완료", room: existRoom });
         } catch (err) {
           return res.status(400).send({
-            msg: "요청한 데이터 형식이 올바르지 않습니다",
+            msg: "비공개방 입장: 요청한 데이터 형식이 올바르지 않습니다",
           });
         }
       }
@@ -507,7 +506,6 @@ async function recommendList(req, res) {
       break;
   }
 }
-
 module.exports = {
   recommendList,
   keywordList,
