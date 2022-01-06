@@ -3,22 +3,6 @@ const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
 async function allRoomList(req, res) {
-  const timer = await Room.findAll({
-    exclude: ["roomPassword"],
-    attributes: ["openAt", "roomId", "isStarted", "studyTime", "recessTime"],
-    raw: true,
-  });
-
-  // const
-  for (let i = 0; i < timer.length; i++) {
-    let now = new Date(Date.now() + 9 * 60 * 60 * 1000);
-    new Date(timer[i].openAt).getHours() - now.getTime() <= 0
-      ? (timer[i].isStarted = 1)
-      : (timer[i].isStarted = 0);
-  }
-  //1 시작 함
-
-  console.log(timer);
   const allRoom = await Room.findAll({
     attributes: { exclude: ["roomPassword"] },
     include: [
@@ -32,7 +16,7 @@ async function allRoomList(req, res) {
   });
 
   try {
-    return res.status(200).send({ list: allRoom, timer });
+    return res.status(200).send({ list: allRoom });
   } catch (err) {
     return res
       .status(400)

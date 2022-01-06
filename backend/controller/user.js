@@ -29,9 +29,6 @@ async function checkUserInfo(req, res) {
     ? (todayEnd = `${year}-${month}-${todayDate}T19:00:00.000Z`)
     : (todayEnd = `${year}-${month}-${dayAfter}T19:00:00.000Z`);
 
-  console.log(year, month, dayAfter);
-  console.log(dayAfter, todayDate, dayBefore);
-  console.log(todayStart, todayEnd);
   // 04시를 기점으로 오늘 공부시간 가져오는 기준일자 달라짐
   // ec2서버 +9시간 추가되는것을 반영하여 시간 설정함.
 
