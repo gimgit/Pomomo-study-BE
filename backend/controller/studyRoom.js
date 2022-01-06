@@ -15,9 +15,6 @@ async function allRoomList(req, res) {
     new Date(timer[i].openAt).getHours() - now.getTime() <= 0
       ? (timer[i].isStarted = 1)
       : (timer[i].isStarted = 0);
-
-    console.log(timer[i].openAt + (timer[i].studyTime + timer[i].recessTime));
-    console.log(now.getTime());
   }
   //1 시작 함
 
@@ -258,7 +255,7 @@ async function enterRoom(req, res) {
       } else {
         try {
           await PersonInRoom.create({ userId, roomId, nick: user.nick });
-          return res.status(201).send({ msg: "입장 완료" });
+          return res.status(201).send({ msg: "입장 완료", room: existRoom });
         } catch (err) {
           return res.status(400).send({
             msg: "요청한 데이터 형식이 올바르지 않습니다",

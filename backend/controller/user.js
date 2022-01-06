@@ -2,33 +2,38 @@ const { User, StudyTime, sequelize } = require("../models");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
-//1~3sequelize check
-
-let [today, tomorrow, yesterday] = [
-  new Date(Date.now() + 9 * 60 * 60 * 1000),
-  new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
-  new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
-];
-let [year, month, date] = [
-  today.getFullYear(),
-  today.getMonth() + 1,
-  today.getDate(),
-];
-let [nextDate, dayBefore] = [tomorrow.getDate(), yesterday.getDate()];
-
 async function checkUserInfo(req, res) {
   const userId = res.locals.user.userId;
+  let [today, tomorrow, yesterday] = [
+    new Date(Date.now() + 9 * 60 * 60 * 1000),
+    new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+    new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+  ];
+  let [year, month, dayAfter] = [
+    today.getFullYear(),
+    `0${today.getMonth() + 1}`.slice(-2),
+    `0${today.getDate() - 1}`.slice(-2),
+  ];
+  let [todayDate, dayBefore] = [
+    `0${yesterday.getDate()}`.slice(-2),
+    `0${yesterday.getDate() - 1}`.slice(-2),
+  ];
   let todayStart;
   let todayEnd;
 
   let isDawn = new Date().getHours();
   isDawn < 4
-    ? (todayStart = `${year}-${month}-${dayBefore}T04:00:00.000Z`)
-    : (todayStart = `${year}-${month}-${date}T04:00:00.000Z`);
+    ? (todayStart = `${year}-${month}-${dayBefore}T19:00:00.000Z`)
+    : (todayStart = `${year}-${month}-${todayDate}T19:00:00.000Z`);
   isDawn < 4
-    ? (todayEnd = `${year}-${month}-${date}T04:00:00.000Z`)
-    : (todayEnd = `${year}-${month}-${nextDate}T04:00:00.000Z`);
-  // 4시를 기점으로 오늘 공부시간 가져오는 기준일자 달라짐
+    ? (todayEnd = `${year}-${month}-${todayDate}T19:00:00.000Z`)
+    : (todayEnd = `${year}-${month}-${dayAfter}T19:00:00.000Z`);
+
+  console.log(year, month, dayAfter);
+  console.log(dayAfter, todayDate, dayBefore);
+  console.log(todayStart, todayEnd);
+  // 04시를 기점으로 오늘 공부시간 가져오는 기준일자 달라짐
+  // ec2서버 +9시간 추가되는것을 반영하여 시간 설정함.
 
   try {
     const userInfo = await User.findAll({

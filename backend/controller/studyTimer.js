@@ -133,7 +133,6 @@ async function syncTimer(req, res) {
 }
 
 async function addTime(req, res) {
-  console.log("addTime");
   const { userId, roomId } = req.params;
   // const { userId, roomId } = req.body;
 
