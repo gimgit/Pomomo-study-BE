@@ -9,7 +9,7 @@ module.exports = class Room extends Sequelize.Model {
           unique: true,
           allowNull: false,
           autoIncrement: true,
-          type: Sequelize.INTEGER,
+          type: Sequelize.BIGINT,
         },
         roomTittle: {
           type: Sequelize.STRING,
@@ -40,14 +40,18 @@ module.exports = class Room extends Sequelize.Model {
           allowNull: false,
         },
         openAt: {
-          type: Sequelize.DATE,
+          type: Sequelize.INTEGER,
           allowNull: false,
-          defaultValue: Sequelize.NOW,
         },
-        // isStarted: {
-        //   type: Sequelize.TINYINT,
-        //   defaultValue: 0,
-        // },
+        isStarted: {
+          type: Sequelize.TINYINT,
+          defaultValue: 0,
+        },
+        currentRound: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+          defaultValue: 0,
+        },
       },
       {
         sequelize,
@@ -66,6 +70,7 @@ module.exports = class Room extends Sequelize.Model {
       as: "peopleInRoom",
       foreignKey: "roomId",
       sourceKey: "roomId",
+      onDelete: "CASCADE",
     });
   }
 };

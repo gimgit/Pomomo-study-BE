@@ -108,7 +108,7 @@ async function login(req, res) {
     const result = bcrypt.compareSync(password, user.password);
     if (!result) {
       res.status(400).send({
-        msg: "이메일 또는 패스워드가 잘못됐습니다.",
+        msg: "비밀번호가 잘못됐습니다.",
       });
       return;
     }

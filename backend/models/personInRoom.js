@@ -7,6 +7,7 @@ module.exports = class PersonInRoom extends Sequelize.Model {
         nick: {
           type: Sequelize.STRING,
           allowNull: false,
+          unique: true,
         },
       },
       {
@@ -29,6 +30,7 @@ module.exports = class PersonInRoom extends Sequelize.Model {
     db.PersonInRoom.belongsTo(db.Room, {
       foreignKey: "roomId",
       targetKey: "roomId",
+      onDelete: "CASCADE",
     });
   }
 };

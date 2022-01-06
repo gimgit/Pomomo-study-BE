@@ -22,7 +22,8 @@
     "mysql2": "^2.3.3",
     "nodemon": "^2.0.15",
     "sequelize": "^7.0.0-alpha.2",
-    "socket.io": "^4.4.0"
+    "socket.io": "^4.4.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "prettier": "^2.5.1",
