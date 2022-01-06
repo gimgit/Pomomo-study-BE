@@ -104,7 +104,7 @@ async function updateUserStatus(req, res) {
 
 async function updateUserImg(req, res) {
   const { userId } = req.params;
-  const { profileImg } = req.body;
+  const profileImg = req.file.location;
   try {
     const userInfo = await User.findOne({ where: { userId: userId } });
     if (!userInfo)
