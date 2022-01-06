@@ -70,6 +70,7 @@ module.exports = class Room extends Sequelize.Model {
       as: "peopleInRoom",
       foreignKey: "roomId",
       sourceKey: "roomId",
+      onDelete: "CASCADE",
     });
   }
 };
