@@ -9,22 +9,20 @@ async function checkUserInfo(req, res) {
   let [year, month, dayAfter, todayDate, dayBefore] = [
     today.getFullYear(),
     `0${today.getMonth() + 1}`.slice(-2),
-    `0${today.getDate() + 1}`.slice(-2),
     `0${today.getDate()}`.slice(-2),
     `0${today.getDate() - 1}`.slice(-2),
+    `0${today.getDate() - 2}`.slice(-2),
   ];
   let todayStart;
   let todayEnd;
 
   let isDawn = new Date().getHours();
   isDawn < 4
-    ? (todayStart = `${year}-${month}-${dayBefore}T04:00:00.000Z`)
-    : (todayStart = `${year}-${month}-${todayDate}T04:00:00.000Z`);
+    ? (todayStart = `${year}-${month}-${dayBefore}T19:00:00.000Z`)
+    : (todayStart = `${year}-${month}-${todayDate}T19:00:00.000Z`);
   isDawn < 4
-    ? (todayEnd = `${year}-${month}-${todayDate}T04:00:00.000Z`)
-    : (todayEnd = `${year}-${month}-${dayAfter}T04:00:00.000Z`);
-
-  console.log(todayStart, todayEnd);
+    ? (todayEnd = `${year}-${month}-${todayDate}T19:00:00.000Z`)
+    : (todayEnd = `${year}-${month}-${dayAfter}T19:00:00.000Z`);
 
   // 04시를 기점으로 오늘 공부시간 가져오는 기준일자 달라짐
 
