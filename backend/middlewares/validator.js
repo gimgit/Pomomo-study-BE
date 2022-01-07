@@ -8,7 +8,8 @@ const validate = (req, res, next) => {
   return res.status(400).json({ msg: "validate error" });
 };
 
-const validateAuth = [body("username", "nick").isLength({ min: 3 }), validate];
+const validateName = [body("username").isLength({ min: 3 }), validate];
+const validateNick = [body("nick").isLength({ min: 3 }), validate];
 const validatePass = [
   body("password")
     .isLength({ min: 6 })
@@ -16,4 +17,4 @@ const validatePass = [
   validate,
 ];
 
-module.exports = { validateAuth, validatePass };
+module.exports = { validateName, validateNick, validatePass };
