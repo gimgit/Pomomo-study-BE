@@ -27,7 +27,6 @@ async function checkUserInfo(req, res) {
   console.log(todayStart, todayEnd);
 
   // 04시를 기점으로 오늘 공부시간 가져오는 기준일자 달라짐
-  // ec2서버 +9시간 추가되는것을 반영하여 시간 설정함.
 
   try {
     const userInfo = await User.findAll({
