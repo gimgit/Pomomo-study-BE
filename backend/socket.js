@@ -1,9 +1,17 @@
 const app = require("./app");
+const fs = require("fs");
+const options = {
+  // letsencrypt로 받은 인증서 경로를 입력
+  ca: fs.readFileSync("/etc/letsencrypt/live/hanghaelog.shop/fullchain.pem"),
+  key: fs.readFileSync("/etc/letsencrypt/live/hanghaelog.shop/privkey.pem"),
+  cert: fs.readFileSync("/etc/letsencrypt/live/hanghaelog.shop/cert.pem"),
+};
 const server = require("http").createServer(app);
-const { Room, PersonInRoom, StudyTime } = require("./models");
-const { Op } = require("sequelize");
+const https = require("https").createServer(options, app);
 
-const io = require("socket.io")(server, {
+const { Room, PersonInRoom, StudyTime } = require("./models");
+
+const io = require("socket.io")(https, {
   cors: {
     origin: "*",
     credentials: true,
@@ -11,21 +19,21 @@ const io = require("socket.io")(server, {
 });
 
 io.on("connection", (socket) => {
-  let userID = null;
-  let roomID = null;
-  let peerID = null;
-  let nickname = null;
-  let streamID = null;
+  let roomID;
+  let peerID;
+  let userID;
+  let nickname;
+  let streamID;
 
   console.log("클라이언트 : ", socket.id, "님");
   socket.on("join-room", async (roomId, peerId, userId, nick, streamId) => {
-    try {
-      userID = userId;
-      roomID = roomId;
-      peerID = peerId;
-      nickname = nick;
-      streamID = streamId;
+	  console.log(`${nick}님이 들어오셨습니다.`)
+    roomID = roomId;
+    peerID = peerId;
+    userID = userId;
+    streamID = streamId;
 
+    try {
       socket.join(roomId);
       console.log(roomId, "방에 입장");
       socket.broadcast
@@ -35,26 +43,26 @@ io.on("connection", (socket) => {
       const currentRound = room.currentRound;
       const totalRound = room.round;
       const openAt = room.openAt;
+
       socket.emit("restTime", currentRound, totalRound, openAt);
+
+      socket.on("endRest", async (roomId, currentRound) => {
+        const room = await Room.findByPk(roomId);
+        const openAt = Date.now() + room.studyTime * 60 * 1000;
+        await Room.update(
+          {
+            currentRound,
+            openAt,
+            isStarted: 1,
+          },
+          { where: { roomId } }
+        );
+        socket.emit("studyTime", currentRound, room.round, openAt);
+      });
     } catch (error) {
       console.log(error);
     }
   });
-
-  socket.on("endRest", async (roomId, currentRound) => {
-    const room = await Room.findByPk(roomId);
-    const openAt = Date.now() + room.studyTime * 60 * 1000;
-    await Room.update(
-      {
-        currentRound,
-        openAt,
-        isStarted: 1,
-      },
-      { where: { roomId } }
-    );
-    socket.emit("studyTime", currentRound, room.round, openAt);
-  });
-
   socket.on("endStudy", async (roomId, userId, nick) => {
     const room = await Room.findByPk(roomId);
     const openAt = Date.now() + room.recessTime * 60 * 1000;
@@ -96,10 +104,6 @@ io.on("connection", (socket) => {
       },
     });
 
-    socket.broadcast
-      .to(roomID)
-      .emit("user-disconnected", peerID, nickname, streamID);
-
     const PIR_list = await PersonInRoom.findAll({
       where: {
         roomId: roomID,
@@ -108,6 +112,10 @@ io.on("connection", (socket) => {
 
     if (PIR_list.length === 0) {
       await Room.destroy({ where: { roomId: roomID } });
+    } else {
+      socket.broadcast
+        .to(roomID)
+        .emit("user-disconnected", peerID, nickname, streamID);
     }
   });
 
@@ -133,4 +141,5 @@ io.on("connection", (socket) => {
   });
 });
 
-module.exports = server;
+module.exports = { server, https };
+

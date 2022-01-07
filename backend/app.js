@@ -8,7 +8,7 @@ app.use(cors());
 const { sequelize } = require("./models");
 
 app.set("port", process.env.PORT || 3000);
-
+app.use(express.static("public"));
 sequelize
   .sync({ force: false })
   .then(() => {
