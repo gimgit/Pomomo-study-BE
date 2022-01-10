@@ -4,6 +4,7 @@ const Op = Sequelize.Op;
 async function allRoomList(req, res) {
   const allRoom = await Room.findAll({
     attributes: { exclude: ["roomPassword"] },
+    order: [["createdAt", "DESC"]],
     include: [
       {
         model: PersonInRoom,
@@ -202,6 +203,7 @@ async function enterRoom(req, res) {
       raw: true,
     }),
   ];
+  
   if (existUser)
     return res.status(400).send({
       msg: "이미 입장한 방입니다.",
@@ -516,3 +518,4 @@ module.exports = {
   // reconnectRoom,
   exitRoom,
 };
+
