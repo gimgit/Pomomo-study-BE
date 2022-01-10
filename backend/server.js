@@ -1,6 +1,9 @@
-const server = require("./socket");
+// const { server, https } = require("./socket");
+const { server } = require("./socket");
+// https.listen(443, () => {
+//   console.log("htts server on 443");
+// });
 
-
-server.listen(3000, function () {
-  console.log("listening on 3000");
+server.listen(3000, () => {
+  console.log("http server on 3000");
 });

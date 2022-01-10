@@ -8,7 +8,7 @@ app.use(cors());
 const { sequelize } = require("./models");
 
 app.set("port", process.env.PORT || 3000);
-
+app.use(express.static("public"));
 sequelize
   .sync({ force: false })
   .then(() => {
@@ -19,7 +19,7 @@ sequelize
   });
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 
 const Router = require("./routes");
 app.use("/api/v1", Router);

@@ -4,19 +4,14 @@ const Op = Sequelize.Op;
 
 async function checkUserInfo(req, res) {
   const userId = res.locals.user.userId;
-  let [today, tomorrow, yesterday] = [
-    new Date(Date.now() + 9 * 60 * 60 * 1000),
-    new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
-    new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
-  ];
-  let [year, month, dayAfter] = [
+  let today = new Date(Date.now() + 9 * 60 * 60 * 1000);
+
+  let [year, month, dayAfter, todayDate, dayBefore] = [
     today.getFullYear(),
     `0${today.getMonth() + 1}`.slice(-2),
+    `0${today.getDate()}`.slice(-2),
     `0${today.getDate() - 1}`.slice(-2),
-  ];
-  let [todayDate, dayBefore] = [
-    `0${yesterday.getDate()}`.slice(-2),
-    `0${yesterday.getDate() - 1}`.slice(-2),
+    `0${today.getDate() - 2}`.slice(-2),
   ];
   let todayStart;
   let todayEnd;
@@ -30,7 +25,6 @@ async function checkUserInfo(req, res) {
     : (todayEnd = `${year}-${month}-${dayAfter}T19:00:00.000Z`);
 
   // 04시를 기점으로 오늘 공부시간 가져오는 기준일자 달라짐
-  // ec2서버 +9시간 추가되는것을 반영하여 시간 설정함.
 
   try {
     const userInfo = await User.findAll({
@@ -104,7 +98,7 @@ async function updateUserStatus(req, res) {
 async function updateUserImg(req, res) {
   const userId = res.locals.user.userId;
   const profileImg = req.file.location;
-
+  console.log(profileImg);
   try {
     const userInfo = await User.findOne({ where: { userId: userId } });
     if (!userInfo)

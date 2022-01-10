@@ -8,7 +8,7 @@ require("dotenv").config();
 AWS.config.update({
   accessKeyId: process.env.AWSAccessKeyId,
   secretAccessKey: process.env.AWSSecretKey,
-  region: "ap-northeast-2",
+  region: process.env.AWSRegion,
 });
 
 // multer를 사용하여 이미지를 업로드하는 미들웨어
