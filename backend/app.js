@@ -1,19 +1,9 @@
 require("dotenv").config();
 const express = require("express");
-const https = require("https");
 const path = require("path");
-const fs = require("fs");
 const cors = require("cors");
 const app = express();
 app.use(cors());
-
-const sslServer = https.createServer(
-  {
-    key: fs.readFileSync(path.join(__dirname, "cert", "key.pem")),
-    cert: fs.readFileSync(path.join(__dirname, "cert", "cert.pem")),
-  },
-  app
-);
 
 const { sequelize } = require("./models");
 
@@ -33,9 +23,5 @@ app.use(express.urlencoded({ extended: true }));
 
 const Router = require("./routes");
 app.use("/api/v1", Router);
-
-sslServer.listen(3443, function () {
-  console.log("https listening on 3443");
-});
 
 module.exports = app;
