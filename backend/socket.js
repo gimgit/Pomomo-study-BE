@@ -1,17 +1,25 @@
 const app = require("./app");
 const fs = require("fs");
-const options = {
-  // letsencrypt로 받은 인증서 경로를 입력
-  ca: fs.readFileSync("./certification/fullchain.pem"),
-  key: fs.readFileSync("./certification/privkey.pem"),
-  cert: fs.readFileSync("./certification/cert.pem"),
-};
+
+// const options = {
+//   // letsencrypt로 받은 인증서 경로를 입력
+//   ca: fs.readFileSync("./certification/fullchain.pem"),
+//   key: fs.readFileSync("./certification/privkey.pem"),
+//   cert: fs.readFileSync("./certification/cert.pem"),
+// };
 const server = require("http").createServer(app);
-const https = require("https").createServer(options, app);
+// const https = require("https").createServer(options, app);
 
 const { Room, PersonInRoom, StudyTime } = require("./models");
 
-const io = require("socket.io")(https, {
+// const io = require("socket.io")(https, {
+//   cors: {
+//     origin: "*",
+//     credentials: true,
+//   },
+// });
+
+const io = require("socket.io")(server, {
   cors: {
     origin: "*",
     credentials: true,
@@ -145,4 +153,5 @@ io.on("connection", (socket) => {
   });
 });
 
-module.exports = { server, https };
+// module.exports = { server, https };
+module.exports = { server };

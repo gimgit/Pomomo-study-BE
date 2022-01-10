@@ -1,64 +1,34 @@
 const { Post, User, StudyTime, Comment } = require("../models");
 const Sequelize = require("sequelize");
-const Op = Sequelize.Op;
-
-//get studyTime
-//댓글 수 같이 불러오기 추가예정
-async function getstudyTime(req, res) {
-  try {
-    const userId = res.locals.user.userId;
-    const studyTime = await StudyTime.findOne({
-      where: { userId },
-      attributes: ["StudyTime"],
-    });
-    return res.status(201).json({ studyTime });
-  } catch (err) {
-    return res.status(400).send({ msg: "조회 실패" });
-  }
-}
-
-// 이미지 업로드 확인용 함수
-async function imgUpload(req, res) {
-  try {
-    const imgInfo = req.file;
-    console.log(imgInfo);
-    res.send("성공");
-  } catch (err) {
-    res.send(err);
-  }
-}
+const { Op } = Sequelize;
 
 //post posts
 async function postBoard(req, res) {
   try {
-    const nick = res.locals.user.nick;
-    const userId = res.locals.user.userId;
+    const { nick, userId } = res.locals.user;
     const { bgtype, postContent, studyTime } = req.body;
     if (!req.file && bgtype) {
-      //file이 아니고 orange일 때
-      const postImg = bgtype; //
-
+      // file이 아니고 bgtype일 때
+      const postImg = bgtype;
       await Post.create({ nick, postContent, studyTime, postImg, userId });
     } else {
-      //file 일때
+      // file 일때
       const postImg = req.file.location;
-      console.log(req.file.location);
-
       await Post.create({ nick, postContent, studyTime, postImg, userId });
     }
     return res.status(201).send({
-      msg: "저장",
+      msg: "게시글 작성 성공",
     });
   } catch (err) {
     console.log(err);
-    return res.status(400).send({ msg: "작성 실패" });
+    return res.status(400).send({ msg: "게시글 작성 실패" });
   }
 }
 
-//get Board
+//get Boards
 async function getBoard(req, res) {
   try {
-    const board = await Post.findAll({ order: [["postId", "DESC"]] });
+    const board = await Post.findAll({ order: [["createdAt", "DESC"]] });
     return res.status(201).json({ board });
   } catch (err) {
     return res.status(400).send({ msg: "조회 실패" });
@@ -96,9 +66,7 @@ async function deleteDetail(req, res) {
 
 module.exports = {
   postBoard,
-  getstudyTime,
   getBoard,
   getDetail,
   deleteDetail,
-  imgUpload,
 };
