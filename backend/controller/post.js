@@ -69,6 +69,7 @@ async function getBoard(req, res) {
 async function getDetail(req, res) {
   try {
     const { postId } = req.params;
+    console.log(postId);
     const post = await Post.findOne({
       where: { postId },
     });

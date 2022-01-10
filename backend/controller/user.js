@@ -37,6 +37,7 @@ async function checkUserInfo(req, res) {
       where: { userId: userId },
       attributes: { exclude: ["password"] },
     });
+    console.log(userInfo);
     const studyRecord = await StudyTime.findAll({
       where: { userId: userId },
       attributes: [[sequelize.fn("sum", sequelize.col("studyTime")), "total"]],
