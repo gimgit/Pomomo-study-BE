@@ -4,6 +4,7 @@ const Op = Sequelize.Op;
 async function allRoomList(req, res) {
   const allRoom = await Room.findAll({
     attributes: { exclude: ["roomPassword"] },
+    order: [["createdAt", "DESC"]],
     include: [
       {
         model: PersonInRoom,
@@ -202,13 +203,7 @@ async function enterRoom(req, res) {
       raw: true,
     }),
   ];
-
-if (existRoom.isStarted === 1) {
-    return res.status(400).send({
-      msg: "공부중입니다. 쉬는 시간에 입장하세요!",
-    });
-  }
-
+  
   if (existUser)
     return res.status(400).send({
       msg: "이미 입장한 방입니다.",
@@ -229,8 +224,6 @@ if (existRoom.isStarted === 1) {
     case 0:
       console.log("공개");
       try {
-
-        console.log(`${userId}님이${roomId}번방에입장 nickname: ${user.nick}`);
         await PersonInRoom.create({ userId, roomId, nick: user.nick });
         return res.status(201).send({ msg: "입장 완료", room: existRoom });
       } catch (err) {
@@ -525,3 +518,4 @@ module.exports = {
   // reconnectRoom,
   exitRoom,
 };
+
