@@ -58,7 +58,7 @@ async function postBoard(req, res) {
 //get Board
 async function getBoard(req, res) {
   try {
-	const board = await Post.findAll({ order: [["postId", "DESC"]] });
+    const board = await Post.findAll({ order: [["postId", "DESC"]] });
     return res.status(201).json({ board });
   } catch (err) {
     return res.status(400).send({ msg: "조회 실패" });
@@ -69,6 +69,7 @@ async function getBoard(req, res) {
 async function getDetail(req, res) {
   try {
     const { postId } = req.params;
+    console.log(postId);
     const post = await Post.findOne({
       where: { postId },
     });
