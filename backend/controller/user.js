@@ -31,6 +31,7 @@ async function checkUserInfo(req, res) {
       where: { userId: userId },
       attributes: { exclude: ["password"] },
     });
+    console.log(userInfo);
     const studyRecord = await StudyTime.findAll({
       where: { userId: userId },
       attributes: [[sequelize.fn("sum", sequelize.col("studyTime")), "total"]],
@@ -98,7 +99,7 @@ async function updateUserStatus(req, res) {
 async function updateUserImg(req, res) {
   const userId = res.locals.user.userId;
   const profileImg = req.file.location;
-
+console.log(profileImg)
   try {
     const userInfo = await User.findOne({ where: { userId: userId } });
     if (!userInfo)

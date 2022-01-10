@@ -2,12 +2,28 @@ const { Post, User, Comment } = require("../models");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
+//get Comment
+async function getCommet(req, res) {
+  const { postId } = req.params;
+  console.log(req.params);
+  try {
+    const comment = await Comment.findAll({
+      where: { postId },
+      order: [["postId", "DESC"]],
+    });
+    console.log(comment);
+    return res.status(201).json({ comment });
+  } catch (err) {
+    return res.status(400).send({ msg: "조회 실패" });
+  }
+}
+
 //post Comment
 async function postComment(req, res) {
   const nick = res.locals.user.nick;
   const { postId } = req.params;
+  console.log(req.params);
   const { comment } = req.body;
-  console.log(postId);
   try {
     await Comment.create({ nick, postId, comment });
     return res.status(201).send({
@@ -36,4 +52,4 @@ async function deleteComment(req, res) {
 
 //delete comment
 
-module.exports = { postComment, deleteComment };
+module.exports = { getCommet, postComment, deleteComment };
