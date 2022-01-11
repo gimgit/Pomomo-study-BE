@@ -12,13 +12,6 @@ const server = require("http").createServer(app);
 
 const { Room, PersonInRoom, StudyTime } = require("./models");
 
-// const io = require("socket.io")(https, {
-//   cors: {
-//     origin: "*",
-//     credentials: true,
-//   },
-// });
-
 const io = require("socket.io")(server, {
   cors: {
     origin: "*",
