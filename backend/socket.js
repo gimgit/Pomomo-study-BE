@@ -3,9 +3,9 @@ const fs = require("fs");
 
 // const options = {
 //   // letsencrypt로 받은 인증서 경로를 입력
-//   ca: fs.readFileSync("/etc/letsencrypt/live/hanghaelog.shop/fullchain.pem"),
-//   key: fs.readFileSync("/etc/letsencrypt/live/hanghaelog.shop/privkey.pem"),
-//   cert: fs.readFileSync("/etc/letsencrypt/live/hanghaelog.shop/cert.pem"),
+//   ca: fs.readFileSync("./certification/fullchain.pem"),
+//   key: fs.readFileSync("./certification/privkey.pem"),
+//   cert: fs.readFileSync("./certification/cert.pem"),
 // };
 const server = require("http").createServer(app);
 // const https = require("https").createServer(options, app);

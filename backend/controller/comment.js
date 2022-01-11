@@ -1,6 +1,6 @@
 const { Post, User, Comment } = require("../models");
 const Sequelize = require("sequelize");
-const Op = Sequelize.Op;
+const { Op } = Sequelize;
 
 // get Comment
 async function getComments(req, res) {

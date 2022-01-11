@@ -72,7 +72,7 @@ async function createUser(req, res) {
 async function login(req, res) {
   try {
     const { username, password } = req.body;
-    const user = await User.findOne({
+    const { userId, nick } = await User.findOne({
       where: { username },
     });
 
@@ -92,7 +92,7 @@ async function login(req, res) {
     }
 
     // user 정보 일치
-    const token = jwt.sign({ userId: user.userId }, process.env.SECRET_KEY);
+    const token = jwt.sign({ userId, nick }, process.env.SECRET_KEY);
     return res.send({
       token,
     });

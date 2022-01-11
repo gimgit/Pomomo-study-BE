@@ -1,132 +1,47 @@
 const { Room, User, PersonInRoom } = require("../models");
 const Sequelize = require("sequelize");
-const Op = Sequelize.Op;
-async function allRoomList(req, res) {
-  const allRoom = await Room.findAll({
-    attributes: { exclude: ["roomPassword"] },
-    order: [["createdAt", "DESC"]],
-    include: [
-      {
-        model: PersonInRoom,
-        as: "peopleInRoom",
-        attributes: ["userId", "createdAt", "nick"],
-        raw: true,
-      },
-    ],
-  });
+const { Op } = Sequelize;
 
+async function allRoomList(req, res) {
   try {
+    const allRoom = await Room.findAll({
+      attributes: { exclude: ["roomPassword"] },
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: PersonInRoom,
+          as: "peopleInRoom",
+          attributes: ["userId", "createdAt", "nick"],
+          raw: true,
+        },
+      ],
+    });
     return res.status(200).send({ list: allRoom });
   } catch (err) {
     return res
       .status(400)
-      .send({ msg: "요청한 데이터 형식이 올바르지 않습니다." });
+      .send({ msg: "스터디룸 리스트 조회에 실패했습니다." });
   }
 }
 
 async function keywordList(req, res) {
   const { roomPurpose } = req.params;
   try {
-    switch (parseInt(roomPurpose)) {
-      case 1:
-        console.log("자율학습");
-        const highschoolEnter = await Room.findAll({
-          where: { purpose: roomPurpose },
-          attributes: { exclude: ["roomPassword"] },
-          include: [
-            {
-              model: PersonInRoom,
-              as: "peopleInRoom",
-              attributes: ["userId", "createdAt"],
-              raw: true,
-            },
-          ],
-        });
-        res.status(200).send({ list: highschoolEnter });
-        break;
-      case 2:
-        console.log("시험");
-        const exam = await Room.findAll({
-          where: { purpose: roomPurpose },
-          attributes: { exclude: ["roomPassword"] },
-          include: [
-            {
-              model: PersonInRoom,
-              as: "peopleInRoom",
-              attributes: ["userId", "createdAt"],
-              raw: true,
-            },
-          ],
-        });
-        res.status(200).send({ list: exam });
-        break;
-      case 3:
-        console.log("수능");
-        const collegeEnter = await Room.findAll({
-          where: { purpose: roomPurpose },
-          attributes: { exclude: ["roomPassword"] },
-          include: [
-            {
-              model: PersonInRoom,
-              as: "peopleInRoom",
-              attributes: ["userId", "createdAt"],
-              raw: true,
-            },
-          ],
-        });
-        res.status(200).send({ list: collegeEnter });
-        break;
-      case 4:
-        console.log("자격증");
-        const civilService = await Room.findAll({
-          where: { purpose: roomPurpose },
-          attributes: { exclude: ["roomPassword"] },
-          include: [
-            {
-              model: PersonInRoom,
-              as: "peopleInRoom",
-              attributes: ["userId", "createdAt"],
-              raw: true,
-            },
-          ],
-        });
-        res.status(200).send({ list: civilService });
-        break;
-      case 5:
-        console.log("공시");
-        const licenseTest = await Room.findAll({
-          where: { purpose: roomPurpose },
-          attributes: { exclude: ["roomPassword"] },
-          include: [
-            {
-              model: PersonInRoom,
-              as: "peopleInRoom",
-              attributes: ["userId", "createdAt"],
-              raw: true,
-            },
-          ],
-        });
-        res.status(200).send({ list: licenseTest });
-        break;
-      case 6:
-        console.log("독서");
-        const readBook = await Room.findAll({
-          where: { purpose: roomPurpose },
-          attributes: { exclude: ["roomPassword"] },
-          include: [
-            {
-              model: PersonInRoom,
-              as: "peopleInRoom",
-              attributes: ["userId", "createdAt"],
-              raw: true,
-            },
-          ],
-        });
-        res.status(200).send({ list: readBook });
-        break;
-    }
+    const keywordRoom = await Room.findAll({
+      where: { purpose: roomPurpose },
+      attributes: { exclude: ["roomPassword"] },
+      include: [
+        {
+          model: PersonInRoom,
+          as: "peopleInRoom",
+          attributes: ["userId", "createdAt"],
+          raw: true,
+        },
+      ],
+    });
+    res.status(200).send({ list: keywordRoom });
   } catch (err) {
-    console.log("err");
+    console.log("해당 키워드의 스터디룸 리스트 조회에 실패했습니다.");
   }
 }
 
@@ -143,27 +58,28 @@ async function createRoom(req, res) {
       openAt,
     } = req.body;
 
-    let existRoom = await Room.findAll({
+    // 방이름 중복 체크
+    const existRoom = await Room.findOne({
       where: { roomTittle: roomTittle },
     });
-    if (existRoom.length) {
+    if (existRoom) {
       return res.status(400).send({ msg: "방이름이 중복됩니다" });
     }
 
-    if (parseInt(private) === 0) {
-      if (roomPassword) {
-        return res
-          .status(400)
-          .send({ msg: "공개방에는 비밀번호를 입력하지 않습니다" });
-      }
-    } else if (parseInt(private) === 1) {
-      if (roomPassword.length < 4) {
-        return res.status(400).send({ msg: "비밀번호는 4글자 이상입니다." });
-      }
-    }
+    // 비공개 방 기능 확장 예정
+    // if (private == 0) {
+    //   if (roomPassword) {
+    //     return res
+    //       .status(400)
+    //       .send({ msg: "공개방에는 비밀번호를 입력하지 않습니다" });
+    //   }
+    // } else if (private == 1) {
+    //   if (roomPassword.length < 4) {
+    //     return res.status(400).send({ msg: "비밀번호는 4글자 이상입니다." });
+    //   }
+    // }
 
-    let openAtTime = Date.now() + openAt * 60 * 1000;
-    console.log(openAtTime);
+    const openAtTime = Date.now() + openAt * 60 * 1000;
     const newRoom = await Room.create({
       roomTittle,
       roomPassword,
@@ -177,33 +93,31 @@ async function createRoom(req, res) {
 
     return res.status(200).send({ msg: "완료", newRoomId: newRoom.roomId });
   } catch (err) {
-    res.status(400).send({ msg: "요청한 데이터 형식이 올바르지 않습니다." });
+    res.status(400).send({ msg: "스터디룸 생성에 실패하였습니다." });
   }
 }
 
 async function enterRoom(req, res) {
   const { roomId } = req.params;
-  const userId = res.locals.user.userId;
+  const { userId, nick } = res.locals.user;
   const { roomPassword } = req.body;
-  let [existRoom, existUser, peopleCount, user] = [
+  const [existRoom, existUser, peopleCnt] = [
     await Room.findOne({
-      where: { roomId: roomId },
+      where: { roomId },
       raw: true,
     }),
     await PersonInRoom.findOne({
-      where: { roomId: roomId, userId: userId },
+      where: { roomId, userId },
     }),
-    await PersonInRoom.findAll({
-      where: { roomId: roomId },
-      raw: true,
-    }),
-    await User.findOne({
-      where: { userId: userId },
-      attributes: ["nick"],
-      raw: true,
-    }),
+    (
+      await PersonInRoom.findOne({
+        where: { roomId },
+        raw: true,
+        attributes: [[Sequelize.fn("COUNT", Sequelize.col("userId")), "count"]],
+      })
+    ).count,
   ];
-  
+
   if (existUser)
     return res.status(400).send({
       msg: "이미 입장한 방입니다.",
@@ -214,67 +128,81 @@ async function enterRoom(req, res) {
       msg: "존재하지 않는 방입니다.",
     });
 
-  if (peopleCount.length > 5) {
+  if (peopleCnt > 6) {
     return res.status(400).send({
-      msg: "6명 초과",
+      msg: "입장불가, 6명 초과",
     });
   }
 
-  switch (parseInt(existRoom.private)) {
-    case 0:
-      console.log("공개");
-      try {
-        await PersonInRoom.create({ userId, roomId, nick: user.nick });
-        return res.status(201).send({ msg: "입장 완료", room: existRoom });
-      } catch (err) {
-        return res.status(400).send({
-          msg: "공개방 입장: 요청한 데이터 형식이 올바르지 않습니다",
-        });
-      }
-    case 1:
-      console.log("비공개");
-      if (existRoom.roomPassword != roomPassword) {
-        return res.status(400).send({
-          msg: "비밀번호를 확인해주세요",
-        });
-      } else {
-        try {
-          await PersonInRoom.create({ userId, roomId, nick: user.nick });
-          return res.status(201).send({ msg: "입장 완료", room: existRoom });
-        } catch (err) {
-          return res.status(400).send({
-            msg: "비공개방 입장: 요청한 데이터 형식이 올바르지 않습니다",
-          });
-        }
-      }
+  try {
+    await PersonInRoom.create({ userId, roomId, nick });
+    return res.status(201).send({ msg: "입장 완료", room: existRoom });
+  } catch (err) {
+    return res.status(400).send({
+      msg: "공개방 입장에 실패하였습니다.",
+    });
   }
+
+  // 비공개방 입장시 필요
+  // switch (parseInt(existRoom.private)) {
+  //   case 0:
+  //     // 공개방 입장
+  //     try {
+  //       await PersonInRoom.create({ userId, roomId, nick });
+  //       return res.status(201).send({ msg: "입장 완료", room: existRoom });
+  //     } catch (err) {
+  //       return res.status(400).send({
+  //         msg: "공개방 입장에 실패하였습니다.",
+  //       });
+  //     }
+  //   case 1:
+  //     // 비공개방 입장
+  //     if (existRoom.roomPassword != roomPassword) {
+  //       return res.status(400).send({
+  //         msg: "비밀번호를 확인해주세요.",
+  //       });
+  //     } else {
+  //       try {
+  //         await PersonInRoom.create({ userId, roomId, nick: user.nick });
+  //         return res.status(201).send({ msg: "입장 완료", room: existRoom });
+  //       } catch (err) {
+  //         return res.status(400).send({
+  //           msg: "비공개방 입장에 실패하였습니다.",
+  //         });
+  //       }
+  //     }
+  // }
 }
 
 async function exitRoom(req, res) {
-  const { roomId, userId } = req.params;
-  let [exitRoom, peopleCount] = [
-    await PersonInRoom.findOne({
-      where: { roomId: roomId, userId: userId },
-      raw: true,
-    }),
-    await PersonInRoom.findAll({
-      where: { roomId: roomId },
-      raw: true,
-    }),
-  ];
-  if (!exitRoom)
-    return res
-      .status(400)
-      .send({ msg: "요청한 데이터 형식이 올바르지 않습니다" });
   try {
-    switch (parseInt(peopleCount.length)) {
+    const { roomId } = req.params;
+    const { userId, nick } = res.locals.user;
+    const [exsitUser, peopleCnt] = [
+      await PersonInRoom.findOne({
+        where: { roomId, userId },
+        raw: true,
+      }),
+      (
+        await PersonInRoom.findOne({
+          where: { roomId },
+          raw: true,
+          attributes: [
+            [Sequelize.fn("COUNT", Sequelize.col("userId")), "count"],
+          ],
+        })
+      ).count,
+    ];
+    if (!exsitUser)
+      return res.status(400).send({ msg: "이미 퇴장한 방입니다." });
+    switch (parseInt(peopleCnt)) {
       case 1:
-        console.log(`마지막 ${userId}번 사용자 퇴장`);
+        console.log(`마지막 ${nick} 사용자 퇴장`);
         await PersonInRoom.destroy({
-          where: { userId: userId, roomId: roomId },
+          where: { userId, roomId },
         });
         await Room.destroy({
-          where: { roomId: roomId },
+          where: { roomId },
         });
         res.status(201).send({ msg: "마지막 유저 퇴장, 방 삭제" });
         break;
@@ -283,233 +211,21 @@ async function exitRoom(req, res) {
       case 4:
       case 5:
       case 6:
-        console.log(`${userId}번 사용자 퇴장`);
+        console.log(`${nick} 사용자 퇴장`);
         await PersonInRoom.destroy({
-          where: { userId: userId, roomId: roomId },
+          where: { userId, roomId },
         });
         res.status(201).send({ msg: "퇴장 완료" });
         break;
     }
   } catch (err) {
     return res.status(400).send({
-      msg: "요청한 데이터 형식이 올바르지 않습니다",
+      msg: "잘못된 퇴장 요청입니다.",
     });
   }
 }
 
-//예비 api
-
-async function enterPrivateRoom(req, res) {
-  const { roomId, userId } = req.params;
-  const { roomPassword } = req.body;
-
-  let [existRoom, existUser, peopleCount, user] = [
-    await Room.findOne({
-      where: { roomId: roomId },
-    }),
-    await PersonInRoom.findOne({
-      where: { roomId: roomId, userId: userId },
-    }),
-    await PersonInRoom.findAll({
-      where: { roomId: roomId },
-      raw: true,
-    }),
-    await User.findOne({
-      where: { userId: userId },
-      attributes: ["nick"],
-      raw: true,
-    }),
-  ];
-
-  console.log(user);
-  if (!roomPassword || roomPassword != existRoom.roomPassword)
-    return res.status(400).send({
-      msg: "비밀번호를 확인하세요",
-    });
-
-  if (existUser)
-    return res.status(400).send({
-      msg: "이미 입장한 방입니다.",
-    });
-
-  if (!existRoom)
-    return res.status(400).send({
-      msg: "존재하지 않는 방입니다.",
-    });
-
-  if (peopleCount.length > 5) {
-    return res.status(400).send({
-      msg: "6명 초과",
-    });
-  } else {
-    try {
-      await PersonInRoom.create({ userId, roomId, nick: user.nick });
-      return res.status(201).send({ msg: "입장 완료" });
-    } catch (err) {
-      return res.status(400).send({
-        msg: "요청한 데이터 형식이 올바르지 않습니다",
-      });
-    }
-  }
-}
-
-// async function enterRoom2(req, res) {
-//   const { roomId, userId } = req.params;
-
-//   let [existRoom, existUser, peopleCount, user] = [
-//     await Room.findOne({
-//       where: { roomId: roomId },
-//     }),
-//     await PersonInRoom.findOne({
-//       where: { roomId: roomId, userId: userId },
-//     }),
-//     await PersonInRoom.findAll({
-//       where: { roomId: roomId },
-//       raw: true,
-//     }),
-//     await User.findOne({
-//       where: { userId: userId },
-//       attributes: ["nick"],
-//       raw: true,
-//     }),
-//   ];
-
-//   console.log(user);
-//   if (existUser)
-//     return res.status(400).send({
-//       msg: "이미 입장한 방입니다.",
-//     });
-
-//   if (!existRoom)
-//     return res.status(400).send({
-//       msg: "존재하지 않는 방입니다.",
-//     });
-
-//   if (peopleCount.length > 5) {
-//     return res.status(400).send({
-//       msg: "6명 초과",
-//     });
-//   } else {
-//     try {
-//       await PersonInRoom.create({ userId, roomId, nick: user.nick });
-//       return res.status(201).send({ msg: "입장 완료" });
-//     } catch (err) {
-//       return res.status(400).send({
-//         msg: "요청한 데이터 형식이 올바르지 않습니다",
-//       });
-//     }
-//   }
-// }
-
-async function recommendList(req, res) {
-  const userId = req.params;
-  const Usertype = await User.findOne({
-    where: { userId: userId },
-    attributes: ["category"],
-    raw: true,
-  });
-  let basis = Usertype.category;
-  switch (parseInt(basis)) {
-    case 0:
-      console.log("중3");
-      const middleThird = await Room.findAll({
-        where: { [Op.or]: [{ purpose: 1 }, { purpose: 0 }] },
-        attributes: { exclude: ["roomPassword"] },
-        include: [
-          {
-            model: PersonInRoom,
-            as: "peopleInRoom",
-            attributes: ["userId", "createdAt"],
-            raw: true,
-          },
-        ],
-      });
-      res.status(200).send({ list: middleThird });
-      break;
-    case 1:
-      console.log("고1");
-      const highFirst = await Room.findAll({
-        where: { [Op.or]: [{ purpose: 1 }, { purpose: 0 }] },
-        attributes: { exclude: ["roomPassword"] },
-        include: [
-          {
-            model: PersonInRoom,
-            as: "peopleInRoom",
-            attributes: ["userId", "createdAt"],
-            raw: true,
-          },
-        ],
-      });
-      res.status(200).send({ list: highFirst });
-      break;
-    case 2:
-      console.log("고2");
-      const highSecond = await Room.findAll({
-        where: { [Op.or]: [{ purpose: 2 }, { purpose: 0 }] },
-        attributes: { exclude: ["roomPassword"] },
-        include: [
-          {
-            model: PersonInRoom,
-            as: "peopleInRoom",
-            attributes: ["userId", "createdAt"],
-            raw: true,
-          },
-        ],
-      });
-      res.status(200).send({ list: highSecond });
-      break;
-    case 3:
-      console.log("고3");
-      const highThird = await Room.findAll({
-        where: { [Op.or]: [{ purpose: 2 }, { purpose: 0 }] },
-        attributes: { exclude: ["roomPassword"] },
-        include: [
-          {
-            model: PersonInRoom,
-            as: "peopleInRoom",
-            attributes: ["userId", "createdAt"],
-            raw: true,
-          },
-        ],
-      });
-      res.status(200).send({ list: highThird });
-      break;
-    case 4:
-      console.log("대학생");
-      const collegeStudent = await Room.findAll({
-        where: { [Op.or]: [{ purpose: 3 }, { purpose: 4 }] },
-        attributes: { exclude: ["roomPassword"] },
-        include: [
-          {
-            model: PersonInRoom,
-            as: "peopleInRoom",
-            attributes: ["userId", "createdAt"],
-            raw: true,
-          },
-        ],
-      });
-      res.status(200).send({ list: collegeStudent });
-      break;
-    case 5:
-      console.log("일반");
-      const ordinary = await Room.findAll({
-        where: { [Op.or]: [{ purpose: 4 }, { purpose: 3 }] },
-        attributes: { exclude: ["roomPassword"] },
-        include: [
-          {
-            model: PersonInRoom,
-            as: "peopleInRoom",
-            attributes: ["userId", "createdAt"],
-            raw: true,
-          },
-        ],
-      });
-      res.status(200).send({ list: ordinary });
-      break;
-  }
-}
 module.exports = {
-  recommendList,
   keywordList,
   allRoomList,
   createRoom,
@@ -518,4 +234,3 @@ module.exports = {
   // reconnectRoom,
   exitRoom,
 };
-

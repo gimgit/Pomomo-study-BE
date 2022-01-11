@@ -1,6 +1,5 @@
 const { Post, User, StudyTime, Comment } = require("../models");
 const Sequelize = require("sequelize");
-const { sequelize } = require("../models/user");
 const { Op } = Sequelize;
 
 // post posts
@@ -29,9 +28,9 @@ async function postArticle(req, res) {
 // get Board
 async function getBoard(req, res) {
   try {
-    const board = await sequelize.query(
+    const board = await Comment.sequelize.query(
       "SELECT *, (select count(*) from Comments where postId = Posts.postId) as commentCnt from Posts;",
-      { type: sequelize.QueryTypes.SELECT }
+      { type: Sequelize.QueryTypes.SELECT }
     );
     return res.status(201).json({ board });
   } catch (err) {
