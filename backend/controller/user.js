@@ -1,9 +1,9 @@
 const { User, StudyTime, sequelize } = require("../models");
 const Sequelize = require("sequelize");
-const Op = Sequelize.Op;
+const { Op } = Sequelize;
 
 async function checkUserInfo(req, res) {
-  const userId = res.locals.user.userId;
+  const { userId } = res.locals.user;
   let today = new Date(Date.now() + 9 * 60 * 60 * 1000);
 
   let [year, month, dayAfter, todayDate, dayBefore] = [
@@ -27,7 +27,7 @@ async function checkUserInfo(req, res) {
   // 04시를 기점으로 오늘 공부시간 가져오는 기준일자 달라짐
 
   try {
-    const userInfo = await User.findAll({
+    const userInfo = await User.findOne({
       where: { userId: userId },
       attributes: { exclude: ["password"] },
     });
@@ -58,62 +58,40 @@ async function checkUserInfo(req, res) {
 }
 
 async function updateUserInfo(req, res) {
-  const userId = res.locals.user.userId;
+  const { userId } = res.locals.user;
   const { category, nick } = req.body;
   try {
-    const userInfo = await User.findOne({
-      where: { userId: userId },
-    });
-    if (!userInfo) return res.status(400).send("err");
-    let userNewInfo = {};
-    if (nick) userNewInfo.nick = nick;
-    if (category) userNewInfo.category = category;
-    await User.update(userNewInfo, { where: { userId: userId } });
-    return res.status(201).send({ msg: "수정완료!" });
+    await User.update({ nick, category }, { where: { userId: userId } });
+    return res.status(201).send({ msg: "회원정보 수정완료!" });
   } catch (err) {
     return res.status(400).send({
       msg: "이미 존재하는 닉네임 또는 요청하는 데이터 형식이 올바르지 않습니다.",
     });
   }
 }
+
 async function updateUserStatus(req, res) {
-  const userId = res.locals.user.userId;
+  const { userId } = res.locals.user;
   const { statusMsg } = req.body;
   try {
-    const userInfo = await User.findOne({ where: { userId: userId } });
-    if (!userInfo)
-      return res
-        .status(400)
-        .send({ msg: "요청한 데이터 형식이 올바르지 않습니다." });
-
-    await User.update({ statusMsg: statusMsg }, { where: { userId: userId } });
-    return res.status(201).json({ msg: "수정완료!" });
+    await User.update({ statusMsg: statusMsg }, { where: { userId } });
+    return res.status(201).send({ msg: "상태메시지 수정완료!" });
   } catch (err) {
     return res.status(400).send({
-      msg: "요청한 데이터 형식이 올바르지 않습니다.",
+      msg: "요청한 상태메시지 형식이 올바르지 않습니다.",
     });
   }
 }
 
 async function updateUserImg(req, res) {
-  const userId = res.locals.user.userId;
+  const { userId } = res.locals.user;
   const profileImg = req.file.location;
-  console.log(profileImg);
   try {
-    const userInfo = await User.findOne({ where: { userId: userId } });
-    if (!userInfo)
-      return res
-        .status(400)
-        .send({ msg: "요청한 데이터 형식이 올바르지 않습니다." });
-
-    await User.update(
-      { profileImg: profileImg },
-      { where: { userId: userId } }
-    );
-    return res.status(201).json({ msg: "수정완료!" });
+    await User.update({ profileImg: profileImg }, { where: { userId } });
+    return res.status(201).json({ msg: "프로필 이미지 수정완료!" });
   } catch (err) {
     return res.status(400).send({
-      msg: "요청한 데이터 형식이 올바르지 않습니다.",
+      msg: "요청한 프로필 이미지 형식이 올바르지 않습니다.",
     });
   }
 }

@@ -1,10 +1,1 @@
-const express = require("express");
-const router = require("express").Router();
-const studyCtl = require("../controller/studyTimer");
-
-const authorization = require("../middlewares/auth-middlewares");
-
-router.get("/:roomId", studyCtl.syncTimer);
-router.post("/:roomId/users/:userId/addTime", studyCtl.addTime);
-
-module.exports = router;
+//소켓으로 대체된 기능입니다. 복구 필요한 경우 2022. 01. 11 이전 커밋을 참조

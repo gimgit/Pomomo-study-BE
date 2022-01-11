@@ -10,9 +10,8 @@ module.exports = (req, res, next) => {
       next();
     });
   } catch (error) {
-    res.status(401).send({
+    return res.status(401).send({
       errorMessage: "로그인 후 사용하세요.",
     });
-    return;
   }
 };

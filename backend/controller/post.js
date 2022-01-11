@@ -1,10 +1,9 @@
 const { Post, User, StudyTime, Comment } = require("../models");
 const Sequelize = require("sequelize");
-const { sequelize } = require("../models/user");
 const { Op } = Sequelize;
 
 // post posts
-async function postBoard(req, res) {
+async function postArticle(req, res) {
   try {
     const { nick, userId } = res.locals.user;
     const { bgtype, postContent, studyTime } = req.body;
@@ -29,11 +28,10 @@ async function postBoard(req, res) {
 // get Board
 async function getBoard(req, res) {
   try {
-    const board = await sequelize.query(
+    const board = await Comment.sequelize.query(
       "SELECT *, (select count(*) from Comments where postId = Posts.postId) as commentCnt from Posts;",
-      { type: sequelize.QueryTypes.SELECT }
+      { type: Sequelize.QueryTypes.SELECT }
     );
-
     return res.status(201).json({ board });
   } catch (err) {
     return res.status(400).send({ msg: "게시글 조회 실패" });
@@ -41,10 +39,9 @@ async function getBoard(req, res) {
 }
 
 // getDetail
-async function getDetail(req, res) {
+async function getArticle(req, res) {
   try {
     const { postId } = req.params;
-    console.log(postId);
     const post = await Post.findOne({
       where: { postId },
       include: {
@@ -60,23 +57,22 @@ async function getDetail(req, res) {
   }
 }
 
-// deleteDetail //본인만 삭제가능하도록
-// async function deleteDetail(req, res) {
-//   try {
-//     const { postId } = req.params;
-//     const { nick } = res.locals.user;
-//     await Post.destroy({ where: { postId: postId } });
-//     if(!nick)
-//     return res.status(201).send({
-//       msg: "게시판삭제 완료",
-//     });
-//   } catch (err) {
-//     return res.status(400).send({ msg: "게시판삭제 실패" });
-//   }
-// }
+// deletePost
+async function deleteArticle(req, res) {
+  try {
+    const { postId } = req.params;
+    await Post.destroy({ where: { postId } });
+    return res.status(201).send({
+      msg: "게시판 삭제 완료",
+    });
+  } catch (err) {
+    return res.status(400).send({ msg: "게시판 삭제 실패" });
+  }
+}
 
 module.exports = {
-  postBoard,
+  postArticle,
   getBoard,
-  getDetail,
+  getArticle,
+  deleteArticle,
 };
