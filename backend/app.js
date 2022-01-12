@@ -2,8 +2,12 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
+const passport = require("passport");
+const passportConfig = require("./passport");
+
 const app = express();
 app.use(cors());
+passportConfig();
 
 const { sequelize } = require("./models");
 
