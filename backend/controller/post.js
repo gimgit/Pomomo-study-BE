@@ -29,7 +29,7 @@ async function postArticle(req, res) {
 async function getBoard(req, res) {
   try {
     const board = await Comment.sequelize.query(
-      "SELECT *, (select count(*) from Comments where postId = Posts.postId) as commentCnt from Posts;",
+      "SELECT *, (select count(*) from Comments where postId = Posts.postId) as commentCnt from Posts order by createdAt desc;",
       { type: Sequelize.QueryTypes.SELECT }
     );
     return res.status(201).json({ board });
@@ -50,6 +50,7 @@ async function getArticle(req, res) {
         attributes: ["nick", "comment", "createdAt"],
         raw: true,
       },
+      order: [[{ model: Comment, as: "Comments" }, "createdAt", "DESC"]],
     });
     return res.status(201).json({ post });
   } catch (err) {
