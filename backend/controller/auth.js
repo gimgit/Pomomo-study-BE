@@ -55,7 +55,7 @@ async function createUser(req, res) {
     const { username, password, passwordConfirm, nick, category } = req.body;
 
     //비밀번호 비교 후 저장
-    const hashedPass = bcrypt.hashSync(password, process.env.SECRET_SALT);
+    const hashedPass = bcrypt.hashSync(password, +process.env.SECRET_SALT);
     await User.create({ username, nick, password: hashedPass, category });
     return res.status(201).send({
       msg: "회원가입 성공",
@@ -72,7 +72,7 @@ async function createUser(req, res) {
 async function login(req, res) {
   try {
     const { username, password } = req.body;
-    const { userId, nick } = await User.findOne({
+    const user = await User.findOne({
       where: { username },
     });
 
@@ -92,7 +92,10 @@ async function login(req, res) {
     }
 
     // user 정보 일치
-    const token = jwt.sign({ userId, nick }, process.env.SECRET_KEY);
+    const token = jwt.sign(
+      { userId: user.userId, nick: user.nick },
+      process.env.SECRET_KEY
+    );
     return res.send({
       token,
     });

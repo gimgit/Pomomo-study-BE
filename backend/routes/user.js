@@ -15,5 +15,6 @@ router.put(
   upload.single("file"),
   mypageCtl.updateUserImg
 );
+router.get("/ranking", mypageCtl.showRanking);
 
 module.exports = router;
