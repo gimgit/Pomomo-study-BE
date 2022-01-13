@@ -27,6 +27,7 @@ io.on("connection", (socket) => {
   let streamID;
   let statusMsg;
   console.log("클라이언트 : ", socket.id, "님");
+
   socket.on(
     "join-room",
     async (roomId, peerId, userId, nick, streamId, status) => {
@@ -39,8 +40,6 @@ io.on("connection", (socket) => {
       try {
         socket.join(roomID);
         console.log(roomID, "방에 입장");
-
-        socket.emit("peer-on", nickname, statusMsg);
         socket.broadcast
           .to(roomID)
           .emit("user-connected", peerID, nickname, streamID, statusMsg);
@@ -56,8 +55,8 @@ io.on("connection", (socket) => {
     }
   );
 
-  socket.on("endRest", async (roomId, currentRound) => {
-    const room = await Room.findByPk(roomId);
+  socket.on("endRest", async (currentRound) => {
+    const room = await Room.findByPk(roomID);
     const openAt = Date.now() + room.studyTime * 60 * 1000;
     await Room.update(
       {
@@ -65,13 +64,13 @@ io.on("connection", (socket) => {
         openAt,
         isStarted: 1,
       },
-      { where: { roomId } }
+      { where: { roomID } }
     );
     socket.emit("studyTime", currentRound, room.round, openAt);
   });
 
-  socket.on("endStudy", async (roomId, userId, nick) => {
-    const room = await Room.findByPk(roomId);
+  socket.on("endStudy", async () => {
+    const room = await Room.findByPk(roomID);
     const openAt = Date.now() + room.recessTime * 60 * 1000;
     const currentRound = room.currentRound;
     const totalRound = room.round;
@@ -81,21 +80,23 @@ io.on("connection", (socket) => {
         openAt,
         isStarted: 0,
       },
-      { where: { roomId } }
+      { where: { roomID } }
     );
 
     await StudyTime.create({
-      userId: userId,
+      userId: userID,
       studyTime: room.studyTime,
+      nick: nickname,
     });
     socket.emit("restTime", currentRound, totalRound, openAt);
   });
 
-  socket.on("totalEnd", async (roomId, userId, nick) => {
-    const room = await Room.findByPk(roomId);
+  socket.on("totalEnd", async () => {
+    const room = await Room.findByPk(roomID);
     await StudyTime.create({
-      userId: userId,
+      userId: userID,
       studyTime: room.studyTime,
+      nick: nickname,
     });
     const endTime = Date.now() + 60000;
     socket.emit("totalEnd", endTime);
@@ -104,46 +105,46 @@ io.on("connection", (socket) => {
   socket.on("disconnect", async () => {
     console.log(`${userID}님이 ${roomID}번방에서 나가셨습니다!`);
 
-    await PersonInRoom.destroy({
-      where: {
-        userId: userID,
-        roomId: roomID,
-      },
-    });
+    // await PersonInRoom.destroy({
+    //   where: {
+    //     userId: userID,
+    //     roomId: roomID,
+    //   },
+    // });
 
     socket.to(roomID).emit("user-disconnected", peerID, nickname, streamID);
 
-    const PIR_list = await PersonInRoom.findAll({
-      where: {
-        roomId: roomID,
-      },
-    });
+    // const PIR_list = await PersonInRoom.findAll({
+    //   where: {
+    //     roomId: roomID,
+    //   },
+    // });
 
-    if (PIR_list.length === 0) {
-      await Room.destroy({ where: { roomId: roomID } });
-    }
+    // if (PIR_list.length === 0) {
+    //   await Room.destroy({ where: { roomId: roomID } });
+    // }
   });
 
-  socket.on("message", ({ name, message, roomId }) => {
-    console.log({ name, message });
+  // socket.on("message", ({ name, message, roomId }) => {
+  //   console.log({ name, message });
 
-    io.to(roomId).emit("message", { name, message });
-  });
+  //   io.to(roomId).emit("message", { name, message });
+  // });
 
-  socket.on("offer", (offer, peerId, roomId) => {
-    console.log("offer 왔습니다!");
-    socket.to(roomId).emit("offer", offer, peerId);
-  });
+  // socket.on("offer", (offer, peerId, roomId) => {
+  //   console.log("offer 왔습니다!");
+  //   socket.to(roomId).emit("offer", offer, peerId);
+  // });
 
-  socket.on("answer", (answer, peerId, roomId) => {
-    console.log("answer 왔습니다!");
-    socket.to(roomId).emit("answer", answer, peerId);
-  });
+  // socket.on("answer", (answer, peerId, roomId) => {
+  //   console.log("answer 왔습니다!");
+  //   socket.to(roomId).emit("answer", answer, peerId);
+  // });
 
-  socket.on("ice", (ice, peerId, roomId) => {
-    console.log("ice 왔습니다!");
-    socket.to(roomId).emit("ice", ice, peerId);
-  });
+  // socket.on("ice", (ice, peerId, roomId) => {
+  //   console.log("ice 왔습니다!");
+  //   socket.to(roomId).emit("ice", ice, peerId);
+  // });
 });
 
 // module.exports = { server, https };
