@@ -105,24 +105,24 @@ io.on("connection", (socket) => {
   socket.on("disconnect", async () => {
     console.log(`${userID}님이 ${roomID}번방에서 나가셨습니다!`);
 
-    // await PersonInRoom.destroy({
-    //   where: {
-    //     userId: userID,
-    //     roomId: roomID,
-    //   },
-    // });
+    await PersonInRoom.destroy({
+      where: {
+        userId: userID,
+        roomId: roomID,
+      },
+    });
 
     socket.to(roomID).emit("user-disconnected", peerID, nickname, streamID);
 
-    // const PIR_list = await PersonInRoom.findAll({
-    //   where: {
-    //     roomId: roomID,
-    //   },
-    // });
+    const PIR_list = await PersonInRoom.findAll({
+      where: {
+        roomId: roomID,
+      },
+    });
 
-    // if (PIR_list.length === 0) {
-    //   await Room.destroy({ where: { roomId: roomID } });
-    // }
+    if (PIR_list.length === 0) {
+      await Room.destroy({ where: { roomId: roomID } });
+    }
   });
 
   // socket.on("message", ({ name, message, roomId }) => {
