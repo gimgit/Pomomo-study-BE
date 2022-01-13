@@ -2,8 +2,12 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
+const passport = require("passport");
+const passportConfig = require("./passport");
+
 const app = express();
 app.use(cors());
+passportConfig();
 
 const { sequelize } = require("./models");
 
@@ -23,5 +27,10 @@ app.use(express.urlencoded({ extended: false }));
 
 const Router = require("./routes");
 app.use("/api/v1", Router);
+
+// //test용
+// app.get("/", (req, res) => {
+//   res.sendFile(__dirname + "/views/kakao.html");
+// });
 
 module.exports = app;
