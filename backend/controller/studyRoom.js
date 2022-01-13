@@ -99,43 +99,45 @@ async function createRoom(req, res) {
 }
 
 async function enterRoom(req, res) {
-  const { roomId } = req.params;
-  const { userId, nick } = res.locals.user;
-  const { roomPassword } = req.body;
-  const [existRoom, existUser, peopleCnt] = [
-    await Room.findOne({
-      where: { roomId },
-      raw: true,
-    }),
-    await PersonInRoom.findOne({
-      where: { roomId, userId },
-    }),
-    (
-      await PersonInRoom.findOne({
+  try {
+    const { roomId } = req.params;
+    const { userId, nick } = res.locals.user;
+    const { roomPassword } = req.body;
+    const [existRoom, existUser, peopleCnt] = [
+      await Room.findOne({
         where: { roomId },
         raw: true,
-        attributes: [[Sequelize.fn("COUNT", Sequelize.col("userId")), "count"]],
-      })
-    ).count,
-  ];
+      }),
+      await PersonInRoom.findOne({
+        where: { roomId, userId },
+      }),
+      (
+        await PersonInRoom.findOne({
+          where: { roomId },
+          raw: true,
+          attributes: [
+            [Sequelize.fn("COUNT", Sequelize.col("userId")), "count"],
+          ],
+        })
+      ).count,
+    ];
 
-  if (existUser)
-    return res.status(400).send({
-      msg: "이미 입장한 방입니다.",
-    });
+    if (existUser)
+      return res.status(400).send({
+        msg: "이미 입장한 방입니다.",
+      });
 
-  if (!existRoom)
-    return res.status(400).send({
-      msg: "존재하지 않는 방입니다.",
-    });
+    if (!existRoom)
+      return res.status(400).send({
+        msg: "존재하지 않는 방입니다.",
+      });
 
-  if (peopleCnt > 6) {
-    return res.status(400).send({
-      msg: "입장불가, 6명 초과",
-    });
-  }
+    if (peopleCnt > 6) {
+      return res.status(400).send({
+        msg: "입장불가, 6명 초과",
+      });
+    }
 
-  try {
     await PersonInRoom.create({ userId, roomId, nick });
     return res.status(201).send({ msg: "입장 완료", room: existRoom });
   } catch (err) {
