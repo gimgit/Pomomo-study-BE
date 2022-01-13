@@ -47,9 +47,10 @@ async function getArticle(req, res) {
       include: {
         model: Comment,
         as: "Comments",
-        attributes: ["nick", "comment", "createdAt"],
+        attributes: ["commentId", "nick", "comment", "createdAt"],
         raw: true,
       },
+      order: [[{ model: Comment, as: "Comments" }, "createdAt", "DESC"]],
     });
     return res.status(201).json({ post });
   } catch (err) {
