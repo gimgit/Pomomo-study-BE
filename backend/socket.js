@@ -148,3 +148,9 @@ io.on("connection", (socket) => {
 
 // module.exports = { server, https };
 module.exports = { server };
+
+// const url = process.env.REACT_APP_API_URL;
+// const socket = io.connect(url, { transports: ["websocket"] });
+
+// const url = process.env.REACT_APP_API_URL;
+// const socket = io(url, { transports: ["websocket"] });

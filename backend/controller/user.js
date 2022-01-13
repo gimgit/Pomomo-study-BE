@@ -5,17 +5,24 @@ const { Op } = Sequelize;
 async function checkUserInfo(req, res) {
   const { userId } = res.locals.user;
   let today = new Date();
+  const timestamp = today.getTime();
 
-  let [year, month, dayBefore, todayDate, dayAfter] = [
+  // 어제와 내일의 timestamp를 출력합니다.
+  const [yesterday, tomorrow] = [
+    timestamp - 24 * 60 * 60 * 1000,
+    timestamp + 24 * 60 * 60 * 1000,
+  ];
+  // 년, 월, 어제 날짜, 오늘 날짜, 내일 날짜를 출력합니다.
+  const [year, month, dayBefore, todayDate, dayAfter] = [
     today.getFullYear(),
     `0${today.getMonth() + 1}`.slice(-2),
-    `0${today.getDate() - 1}`.slice(-2),
+    `0${new Date(yesterday).getDate()}`.slice(-2),
     `0${today.getDate()}`.slice(-2),
-    `0${today.getDate() + 1}`.slice(-2),
+    `0${new Date(tomorrow).getDate()}`.slice(-2),
   ];
-  let todayStart;
-  let todayEnd;
 
+  // 현재시각이 04시 이전인 경우 어제 04시 부터 오늘 04시까지의 데이터 출력
+  // 현재시각이 04시 이후인 경우 오늘 04시 부터 내일 04시까지의 데이터 출력
   let isDawn = today.getHours();
   isDawn < 4
     ? (todayStart = `${year}-${month}-${dayBefore}T04:00:00.000Z`)
@@ -23,6 +30,9 @@ async function checkUserInfo(req, res) {
   isDawn < 4
     ? (todayEnd = `${year}-${month}-${todayDate}T04:00:00.000Z`)
     : (todayEnd = `${year}-${month}-${dayAfter}T04:00:00.000Z`);
+
+  console.log(todayStart);
+  console.log(todayEnd);
 
   try {
     const userInfo = await User.findOne({
@@ -98,11 +108,13 @@ async function showRanking(req, res) {
   const timestamp = today.getTime();
   const day = today.getDay();
 
+  // 월요일과 일요일의 timestamp를 출력합니다.
   const [startPoint, endPoint] = [
     timestamp - (day - 1) * 24 * 60 * 60 * 1000,
     timestamp + (7 - day) * 24 * 60 * 60 * 1000,
   ];
 
+  // 년, 월, 월요일 날짜, 일요일 날짜를 출력합니다.
   const [year, month, monday, sunday] = [
     today.getFullYear(),
     `0${today.getMonth() + 1}`.slice(-2),
@@ -110,7 +122,7 @@ async function showRanking(req, res) {
     `0${new Date(endPoint).getDate()}`.slice(-2),
   ];
 
-  let weekStart = `${year}-${month}-${monday}T00:00:00.000Z`;
+  let weekStart = `${year}-${month}-${monday}T00:00:01.000Z`;
   let weekEnd = `${year}-${month}-${sunday}T00:00:00.000Z`;
 
   try {

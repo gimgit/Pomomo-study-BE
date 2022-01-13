@@ -40,7 +40,7 @@ module.exports = class Room extends Sequelize.Model {
           allowNull: false,
         },
         openAt: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.BIGINT,
           allowNull: false,
         },
         isStarted: {
