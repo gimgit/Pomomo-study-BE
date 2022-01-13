@@ -38,6 +38,7 @@ async function keywordList(req, res) {
           raw: true,
         },
       ],
+      order: [["createdAt", "DESC"]],
     });
     res.status(200).send({ list: keywordRoom });
   } catch (err) {

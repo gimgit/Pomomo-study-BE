@@ -12,6 +12,10 @@ module.exports = class StudyTime extends Sequelize.Model {
           type: Sequelize.INTEGER,
           allowNull: false,
         },
+        nick: {
+          type: Sequelize.STRING,
+          allowNull: true,
+        },
       },
       {
         sequelize,

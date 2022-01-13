@@ -4,38 +4,46 @@ const { Op } = Sequelize;
 
 async function checkUserInfo(req, res) {
   const { userId } = res.locals.user;
-  let today = new Date(Date.now() + 9 * 60 * 60 * 1000);
+  let today = new Date();
+  const timestamp = today.getTime();
 
-  let [year, month, dayAfter, todayDate, dayBefore] = [
+  // 어제와 내일의 timestamp를 출력합니다.
+  const [yesterday, tomorrow] = [
+    timestamp - 24 * 60 * 60 * 1000,
+    timestamp + 24 * 60 * 60 * 1000,
+  ];
+  // 년, 월, 어제 날짜, 오늘 날짜, 내일 날짜를 출력합니다.
+  const [year, month, dayBefore, todayDate, dayAfter] = [
     today.getFullYear(),
     `0${today.getMonth() + 1}`.slice(-2),
+    `0${new Date(yesterday).getDate()}`.slice(-2),
     `0${today.getDate()}`.slice(-2),
-    `0${today.getDate() - 1}`.slice(-2),
-    `0${today.getDate() - 2}`.slice(-2),
+    `0${new Date(tomorrow).getDate()}`.slice(-2),
   ];
-  let todayStart;
-  let todayEnd;
 
-  let isDawn = new Date().getHours();
+  // 현재시각이 04시 이전인 경우 어제 04시 부터 오늘 04시까지의 데이터 출력
+  // 현재시각이 04시 이후인 경우 오늘 04시 부터 내일 04시까지의 데이터 출력
+  let isDawn = today.getHours();
   isDawn < 4
-    ? (todayStart = `${year}-${month}-${dayBefore}T19:00:00.000Z`)
-    : (todayStart = `${year}-${month}-${todayDate}T19:00:00.000Z`);
+    ? (todayStart = `${year}-${month}-${dayBefore}T04:00:00.000Z`)
+    : (todayStart = `${year}-${month}-${todayDate}T04:00:00.000Z`);
   isDawn < 4
-    ? (todayEnd = `${year}-${month}-${todayDate}T19:00:00.000Z`)
-    : (todayEnd = `${year}-${month}-${dayAfter}T19:00:00.000Z`);
+    ? (todayEnd = `${year}-${month}-${todayDate}T04:00:00.000Z`)
+    : (todayEnd = `${year}-${month}-${dayAfter}T04:00:00.000Z`);
 
-  // 04시를 기점으로 오늘 공부시간 가져오는 기준일자 달라짐
+  console.log(todayStart);
+  console.log(todayEnd);
 
   try {
     const userInfo = await User.findOne({
       where: { userId: userId },
       attributes: { exclude: ["password"] },
     });
-    const studyRecord = await StudyTime.findAll({
+    const studyRecord = await StudyTime.findOne({
       where: { userId: userId },
       attributes: [[sequelize.fn("sum", sequelize.col("studyTime")), "total"]],
     });
-    const todayRecord = await StudyTime.findAll({
+    const todayRecord = await StudyTime.findOne({
       where: {
         userId: userId,
         createdAt: {
@@ -44,7 +52,6 @@ async function checkUserInfo(req, res) {
       },
       attributes: [[sequelize.fn("sum", sequelize.col("studyTime")), "today"]],
     });
-
     return res.status(200).send({
       user: userInfo,
       totalRecord: studyRecord,
@@ -96,9 +103,55 @@ async function updateUserImg(req, res) {
   }
 }
 
+async function showRanking(req, res) {
+  const today = new Date();
+  const timestamp = today.getTime();
+  const day = today.getDay();
+
+  // 월요일과 일요일의 timestamp를 출력합니다.
+  const [startPoint, endPoint] = [
+    timestamp - (day - 1) * 24 * 60 * 60 * 1000,
+    timestamp + (7 - day) * 24 * 60 * 60 * 1000,
+  ];
+
+  // 년, 월, 월요일 날짜, 일요일 날짜를 출력합니다.
+  const [year, month, monday, sunday] = [
+    today.getFullYear(),
+    `0${today.getMonth() + 1}`.slice(-2),
+    `0${new Date(startPoint).getDate()}`.slice(-2),
+    `0${new Date(endPoint).getDate()}`.slice(-2),
+  ];
+
+  let weekStart = `${year}-${month}-${monday}T00:00:01.000Z`;
+  let weekEnd = `${year}-${month}-${sunday}T00:00:00.000Z`;
+
+  try {
+    const studyRanking = await StudyTime.findAll({
+      where: {
+        createdAt: {
+          [Op.between]: [weekStart, weekEnd],
+        },
+      },
+      attributes: [
+        "userId",
+        [sequelize.fn("SUM", sequelize.col("studyTime")), "weeklyRecord"],
+      ],
+      group: ["userId"],
+    });
+    return res.status(200).send({
+      studyRanking,
+    });
+  } catch (err) {
+    return res.status(400).send({
+      msg: "요청한 데이터 형식이 올바르지 않습니다.",
+    });
+  }
+}
+
 module.exports = {
   checkUserInfo,
   updateUserInfo,
   updateUserStatus,
   updateUserImg,
+  showRanking,
 };

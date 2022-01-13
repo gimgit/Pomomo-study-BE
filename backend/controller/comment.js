@@ -8,7 +8,7 @@ async function getComments(req, res) {
   try {
     const comments = await Comment.findAll({
       where: { postId },
-      order: [["createdAt", "DESC"]],
+      order: [["createdAt", "ASC"]],
     });
     return res.status(201).json({ comments });
   } catch (err) {
@@ -36,7 +36,6 @@ async function postComment(req, res) {
 async function deleteComment(req, res) {
   try {
     const { postId, commentId } = req.params;
-    // const nick = res.locals.user.nick;
     await Comment.destroy({ where: { postId, commentId } });
     return res.status(201).send({
       msg: "댓글 삭제 완료",

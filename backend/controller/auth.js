@@ -55,7 +55,7 @@ async function createUser(req, res) {
     const { username, password, passwordConfirm, nick, category } = req.body;
     //비밀번호 비교 후 저장
     const hashedPass = bcrypt.hashSync(password, +process.env.SECRET_SALT);
-
+    
     await User.create({ username, nick, password: hashedPass, category });
     return res.status(201).send({
       msg: "회원가입 성공",
