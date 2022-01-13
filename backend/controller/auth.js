@@ -3,6 +3,7 @@ const Sequelize = require("sequelize");
 const { Op } = Sequelize;
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const passport = require("passport");
 
 // name check
 async function nameCheck(req, res) {
@@ -104,9 +105,28 @@ async function login(req, res) {
   }
 }
 
+const kakaoCallback = (req, res, next) => {
+  passport.authenticate(
+    "kakao",
+    { failureRedirect: "/" },
+    (err, user, info) => {
+      if (err) return next(err);
+      const { userId, nick } = user;
+      console.log(user);
+      const token = jwt.sign({ userId, nick }, process.env.SECRET_KEY);
+      result = {
+        token,
+        nick,
+      };
+      res.send({ user: result });
+    }
+  )(req, res, next);
+};
+
 module.exports = {
   nameCheck,
   nickCheck,
   createUser,
   login,
+  kakaoCallback,
 };
