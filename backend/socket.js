@@ -44,7 +44,7 @@ io.on("connection", (socket) => {
           .to(roomID)
           .emit("user-connected", peerID, nickname, streamID, statusMsg);
 
-        socket.emit("peer-on", nickname, statusMsg);
+        socket.to(roomID).emit("welcome", nickname, statusMsg);
         const room = await Room.findByPk(roomID);
         const currentRound = room.currentRound;
         const totalRound = room.round;
@@ -133,7 +133,6 @@ io.on("connection", (socket) => {
 
   socket.on("join-chatRoom", (roomId, userId, userNickname) => {
     socket.join(roomId);
-    socket.to(roomId).emit("welcome", userNickname, statusMsg);
   });
 
   // socket.on("offer", (offer, peerId, roomId) => {
