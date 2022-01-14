@@ -132,7 +132,7 @@ async function enterRoom(req, res) {
         msg: "존재하지 않는 방입니다.",
       });
 
-    if (peopleCnt > 6) {
+    if (peopleCnt > 5) {
       return res.status(400).send({
         msg: "입장불가, 6명 초과",
       });
