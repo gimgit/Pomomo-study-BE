@@ -40,7 +40,7 @@ io.on("connection", (socket) => {
       try {
         socket.join(roomID);
         console.log(roomID, "방에 입장");
-        socket.broadcast
+        socket
           .to(roomID)
           .emit("user-connected", peerID, nickname, streamID, statusMsg);
         const room = await Room.findByPk(roomID);
@@ -125,11 +125,14 @@ io.on("connection", (socket) => {
     }
   });
 
-  // socket.on("message", ({ name, message, roomId }) => {
-  //   console.log({ name, message });
+  socket.on("message", (message) => {
+    socket.to(roomID).emit("message", nickname, message);
+  });
 
-  //   io.to(roomId).emit("message", { name, message });
-  // });
+  socket.on("join-chatRoom", (roomId, userId, userNickname) => {
+    socket.join(roomId);
+    socket.emit("welcome", roomId);
+  });
 
   // socket.on("offer", (offer, peerId, roomId) => {
   //   console.log("offer 왔습니다!");
