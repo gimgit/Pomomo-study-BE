@@ -43,6 +43,8 @@ io.on("connection", (socket) => {
         socket
           .to(roomID)
           .emit("user-connected", peerID, nickname, streamID, statusMsg);
+
+        socket.emit("peer-on", nickname, statusMsg);
         const room = await Room.findByPk(roomID);
         const currentRound = room.currentRound;
         const totalRound = room.round;
