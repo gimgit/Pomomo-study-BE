@@ -133,7 +133,7 @@ io.on("connection", (socket) => {
 
   socket.on("join-chatRoom", (roomId, userId, userNickname) => {
     socket.join(roomId);
-    socket.emit("welcome", roomId);
+    socket.to(roomId).emit("welcome", userNickname, statusMsg);
   });
 
   // socket.on("offer", (offer, peerId, roomId) => {
