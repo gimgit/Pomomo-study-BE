@@ -1,6 +1,7 @@
 const app = require("./app");
 const fs = require("fs");
-
+const sequelize = require("sequelize");
+const { Op } = sequelize;
 // const options = {
 //   // letsencrypt로 받은 인증서 경로를 입력
 //   ca: fs.readFileSync("/etc/letsencrypt/live/hanghaelog.shop/fullchain.pem"),
@@ -44,7 +45,10 @@ io.on("connection", (socket) => {
           .to(roomID)
           .emit("user-connected", peerID, nickname, streamID, statusMsg);
         const users = await PersonInRoom.findAll({
-          where: { roomId: roomID },
+          where: { 
+            roomId: roomID,
+            userId: {[Op.not]: userID}
+           },
         });
         socket.emit("welcome", users, users.length);
         const room = await Room.findByPk(roomID);
