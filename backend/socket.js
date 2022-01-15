@@ -45,10 +45,10 @@ io.on("connection", (socket) => {
           .to(roomID)
           .emit("user-connected", peerID, nickname, streamID, statusMsg);
         const users = await PersonInRoom.findAll({
-          where: { 
+          where: {
             roomId: roomID,
-            userId: {[Op.not]: userID}
-           },
+            userId: { [Op.not]: userID },
+          },
         });
         socket.emit("welcome", users, users.length);
         const room = await Room.findByPk(roomID);
@@ -94,7 +94,6 @@ io.on("connection", (socket) => {
     await StudyTime.create({
       userId: userID,
       studyTime: room.studyTime,
-      nick: nickname,
     });
     socket.emit("restTime", currentRound, totalRound, openAt);
   });
@@ -104,7 +103,6 @@ io.on("connection", (socket) => {
     await StudyTime.create({
       userId: userID,
       studyTime: room.studyTime,
-      nick: nickname,
     });
     const endTime = Date.now() + 60000;
     socket.emit("totalEnd", endTime);

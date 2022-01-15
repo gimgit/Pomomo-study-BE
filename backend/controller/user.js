@@ -3,17 +3,18 @@ const Sequelize = require("sequelize");
 const { Op } = Sequelize;
 
 function timeSet() {
+  // 1. 현재 날짜정보, 오늘 타임스탬프, 오늘 요일 출력
   const now = new Date();
   const [timestamp, day] = [now.getTime(), now.getDay()];
   let weekStart, todayStart;
 
-  // 금주 월요일과 어제의 timestamp를 출력합니다.
+  // 2. 금주 월요일과 어제의 timestamp 출력.
   const [mondayStamp, yesterdayStamp] = [
     timestamp - (day - 1) * 24 * 60 * 60 * 1000,
     timestamp - 24 * 60 * 60 * 1000,
   ];
 
-  // 현재시각, 년, 월, 오늘날짜, 어제날짜, 금주 월요일 날짜를 출력합니다.
+  // 3. 현재시각, 년, 월, 오늘날짜, 어제날짜, 금주 월요일 날짜를 출력.
   const [currentTime, year, month, today, yesterday, monday] = [
     now.getHours(),
     now.getFullYear(),
@@ -113,10 +114,17 @@ async function showRanking(req, res) {
         },
       },
       attributes: [
-        "nick",
+        "userId",
         [sequelize.fn("SUM", sequelize.col("studyTime")), "weeklyRecord"],
       ],
-      group: ["nick"],
+      include: [
+        {
+          model: User,
+          as: "User",
+          attributes: ["nick", "category"],
+        },
+      ],
+      group: ["userId"],
       order: [[sequelize.fn("SUM", sequelize.col("studyTime")), "DESC"]],
     });
     return res.status(200).send({
