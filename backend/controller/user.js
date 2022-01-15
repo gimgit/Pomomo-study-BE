@@ -53,7 +53,6 @@ async function checkUserInfo(req, res) {
       },
       attributes: [[sequelize.fn("sum", sequelize.col("studyTime")), "today"]],
     });
-    console.log(todayStart);
     return res.status(200).send({
       user: userInfo,
       totalRecord: studyRecord,
