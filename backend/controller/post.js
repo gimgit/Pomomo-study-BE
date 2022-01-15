@@ -1,6 +1,5 @@
 const { Post, User, StudyTime, Comment, sequelize } = require("../models");
 const Sequelize = require("sequelize");
-const { post } = require("../routes");
 const { Op } = Sequelize;
 
 // post posts
@@ -42,6 +41,7 @@ async function getBoard(req, res) {
           attributes: ["commentId"],
         },
       ],
+      order: [["createdAt", "DESC"]],
     });
     return res.status(201).json({ board });
   } catch (err) {
