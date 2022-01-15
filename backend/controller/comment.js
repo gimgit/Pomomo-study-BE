@@ -23,7 +23,12 @@ async function postComment(req, res) {
   const { postId } = req.params;
   const { comment } = req.body;
   try {
-    await Comment.create({ nick, postId, comment, userId });
+    await Comment.create({
+      nick,
+      postId,
+      comment,
+      userId,
+    });
     return res.status(201).send({
       msg: "댓글 작성 성공",
     });

@@ -1,5 +1,6 @@
-const { Post, User, StudyTime, Comment } = require("../models");
+const { Post, User, StudyTime, Comment, sequelize } = require("../models");
 const Sequelize = require("sequelize");
+const { post } = require("../routes");
 const { Op } = Sequelize;
 
 // post posts
@@ -28,10 +29,20 @@ async function postArticle(req, res) {
 // get Board
 async function getBoard(req, res) {
   try {
-    const board = await Comment.sequelize.query(
-      "SELECT *, (select count(*) from Comments where postId = Posts.postId) as commentCnt from Posts order by createdAt desc;",
-      { type: Sequelize.QueryTypes.SELECT }
-    );
+    const board = await Post.findAll({
+      include: [
+        {
+          model: User,
+          as: "User",
+          attributes: ["nick"],
+        },
+        {
+          model: Comment,
+          as: "Comments",
+          attributes: ["commentId"],
+        },
+      ],
+    });
     return res.status(201).json({ board });
   } catch (err) {
     return res.status(400).send({ msg: "게시글 조회 실패" });
@@ -44,15 +55,30 @@ async function getArticle(req, res) {
     const { postId } = req.params;
     const post = await Post.findOne({
       where: { postId },
-      include: {
-        model: Comment,
-        as: "Comments",
-        attributes: ["commentId", "nick", "comment", "createdAt"],
-        raw: true,
-      },
+      include: [
+        {
+          model: Comment,
+          as: "Comments",
+          attributes: ["comment", "createdAt", "commentId"],
+          raw: true,
+          include: [
+            {
+              model: User,
+              as: "User",
+              attributes: ["nick", "profileImg"],
+            },
+          ],
+        },
+        {
+          model: User,
+          as: "User",
+          attributes: ["nick", "profileImg"],
+          raw: true,
+        },
+      ],
       order: [[{ model: Comment, as: "Comments" }, "createdAt", "DESC"]],
     });
-    return res.status(201).json({ post });
+    return res.status(201).send({ post });
   } catch (err) {
     return res.status(400).send({ msg: "상세페이지 조회 실패" });
   }
