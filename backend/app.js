@@ -28,9 +28,9 @@ app.use(express.urlencoded({ extended: false }));
 const Router = require("./routes");
 app.use("/api/v1", Router);
 
-// //test용
-// app.get("/", (req, res) => {
-//   res.sendFile(__dirname + "/views/kakao.html");
-// });
+//test용
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/views/kakao.html");
+});
 
 module.exports = app;

@@ -56,7 +56,7 @@ async function createUser(req, res) {
     const { username, password, passwordConfirm, nick, category } = req.body;
     //비밀번호 비교 후 저장
     const hashedPass = bcrypt.hashSync(password, +process.env.SECRET_SALT);
-    
+
     await User.create({ username, nick, password: hashedPass, category });
     return res.status(201).send({
       msg: "회원가입 성공",
@@ -115,7 +115,25 @@ const kakaoCallback = (req, res, next) => {
     (err, user, info) => {
       if (err) return next(err);
       const { userId, nick } = user;
-      console.log(user);
+      const token = jwt.sign({ userId, nick }, process.env.SECRET_KEY);
+      console.log(token);
+      result = {
+        token,
+        nick,
+      };
+      res.send({ user: result });
+      console.log(result);
+    }
+  )(req, res, next);
+};
+
+const googleCallback = (req, res, next) => {
+  passport.authenticate(
+    "google",
+    { failureRedirect: "/" },
+    (err, user, info) => {
+      if (err) return next(err);
+      const { userId, nick } = user;
       const token = jwt.sign({ userId, nick }, process.env.SECRET_KEY);
       result = {
         token,
@@ -132,4 +150,5 @@ module.exports = {
   createUser,
   login,
   kakaoCallback,
+  googleCallback,
 };

@@ -1,5 +1,6 @@
 const passport = require("passport");
 const KakaoStrategy = require("passport-kakao").Strategy;
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 const { User } = require("../models");
 
@@ -8,7 +9,7 @@ module.exports = () => {
     new KakaoStrategy(
       {
         clientID: process.env.KAKAO_ID, // 카카오 로그인에서 발급받은 REST API 키
-        callbackURL: "https://bbomomo.com/api/v1/auth/kakao/callback", // 카카오 로그인 Redirect URI 경로
+        callbackURL: "http://localhost:3000/api/v1/auth/kakao/callback", // 카카오 로그인 Redirect URI 경로
         // http://localhost:3000/api/v1/auth/kakao/callback
         // http://54.180.120.210/api/v1/auth/kakao/callback
       },
@@ -17,7 +18,6 @@ module.exports = () => {
       // callbackURL: 카카오 로그인 후 카카오가 결과를 전송해줄 URL
       // accessToken, refreshToken: 로그인 성공 후 카카오가 보내준 토큰
       // profile: 카카오가 보내준 유저 정보. profile의 정보를 바탕으로 회원가입
-
       async (accessToken, refreshToken, profile, done) => {
         console.log("kakao profile", profile);
         try {
@@ -36,6 +36,36 @@ module.exports = () => {
               provider: "kakao",
             });
             done(null, newUser); // 회원가입하고 로그인 인증 완료
+          }
+        } catch (error) {
+          console.error(error);
+          done(error);
+        }
+      }
+    )
+  );
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: process.env.GOOGLE_ID,
+        clientSecret: process.env.GOOGLE_SECRET,
+        callbackURL: "http://localhost:3000/api/v1/auth/google/callback",
+      },
+      async (accessToken, refreshToken, profile, done) => {
+        console.log("google profile", profile);
+        try {
+          const exUser = await User.findOne({
+            where: { snsId: profile.id, provider: "google" },
+          });
+          if (exUser) {
+            done(null, exUser);
+          } else {
+            const newUser = await User.create({
+              nick: profile.displayName,
+              snsId: profile.id,
+              provider: "google",
+            });
+            done(null, newUser);
           }
         } catch (error) {
           console.error(error);
