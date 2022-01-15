@@ -1,6 +1,7 @@
 const app = require("./app");
 const fs = require("fs");
-
+const sequelize = require("sequelize");
+const { Op } = sequelize;
 // const options = {
 //   // letsencrypt로 받은 인증서 경로를 입력
 //   ca: fs.readFileSync("/etc/letsencrypt/live/hanghaelog.shop/fullchain.pem"),
@@ -40,9 +41,16 @@ io.on("connection", (socket) => {
       try {
         socket.join(roomID);
         console.log(roomID, "방에 입장");
-        socket.broadcast
+        socket
           .to(roomID)
           .emit("user-connected", peerID, nickname, streamID, statusMsg);
+        const users = await PersonInRoom.findAll({
+          where: { 
+            roomId: roomID,
+            userId: {[Op.not]: userID}
+           },
+        });
+        socket.emit("welcome", users, users.length);
         const room = await Room.findByPk(roomID);
         const currentRound = room.currentRound;
         const totalRound = room.round;
@@ -105,31 +113,33 @@ io.on("connection", (socket) => {
   socket.on("disconnect", async () => {
     console.log(`${userID}님이 ${roomID}번방에서 나가셨습니다!`);
 
-    // await PersonInRoom.destroy({
-    //   where: {
-    //     userId: userID,
-    //     roomId: roomID,
-    //   },
-    // });
+    await PersonInRoom.destroy({
+      where: {
+        userId: userID,
+        roomId: roomID,
+      },
+    });
 
     socket.to(roomID).emit("user-disconnected", peerID, nickname, streamID);
 
-    // const PIR_list = await PersonInRoom.findAll({
-    //   where: {
-    //     roomId: roomID,
-    //   },
-    // });
+    const PIR_list = await PersonInRoom.findAll({
+      where: {
+        roomId: roomID,
+      },
+    });
 
-    // if (PIR_list.length === 0) {
-    //   await Room.destroy({ where: { roomId: roomID } });
-    // }
+    if (PIR_list.length === 0) {
+      await Room.destroy({ where: { roomId: roomID } });
+    }
   });
 
-  // socket.on("message", ({ name, message, roomId }) => {
-  //   console.log({ name, message });
+  socket.on("message", (message) => {
+    socket.to(roomID).emit("message", nickname, message);
+  });
 
-  //   io.to(roomId).emit("message", { name, message });
-  // });
+  socket.on("join-chatRoom", (roomId, userId, userNickname) => {
+    socket.join(roomId);
+  });
 
   // socket.on("offer", (offer, peerId, roomId) => {
   //   console.log("offer 왔습니다!");

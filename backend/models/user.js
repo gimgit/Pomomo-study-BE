@@ -38,12 +38,14 @@ module.exports = class User extends Sequelize.Model {
           allowNull: true,
         },
         category: {
-          type: Sequelize.STRING,
-          allowNull: false,
+          type: Sequelize.INTEGER,
+          allowNull: true,
+          defaultValue: 0
         },
         statusMsg: {
           type: Sequelize.STRING,
           allowNull: true,
+          defaultValue: "상태메시지를 변경해주세요!"
         },
       },
       {

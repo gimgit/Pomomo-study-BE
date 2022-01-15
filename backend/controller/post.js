@@ -43,11 +43,6 @@ async function getBoard(req, res) {
         },
       ],
     });
-    // try {
-    //   const board = await Comment.sequelize.query(
-    //     "SELECT *, (select count(*) from Comments where postId = Posts.postId) as commentCnt from Posts order by createdAt desc;",
-    //     { type: Sequelize.QueryTypes.SELECT }
-    //   );
     return res.status(201).json({ board });
   } catch (err) {
     return res.status(400).send({ msg: "게시글 조회 실패" });
@@ -77,14 +72,13 @@ async function getArticle(req, res) {
         {
           model: User,
           as: "User",
-          attributes: ["profileImg", "nick"],
+          attributes: ["nick", "profileImg"],
           raw: true,
         },
       ],
       order: [[{ model: Comment, as: "Comments" }, "createdAt", "DESC"]],
     });
-
-    return res.status(201).json({ post });
+    return res.status(201).send({ post });
   } catch (err) {
     return res.status(400).send({ msg: "상세페이지 조회 실패" });
   }
