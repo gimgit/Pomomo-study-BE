@@ -42,7 +42,9 @@ async function keywordList(req, res) {
     });
     res.status(200).send({ list: keywordRoom });
   } catch (err) {
-    console.log("해당 키워드의 스터디룸 리스트 조회에 실패했습니다.");
+    return res
+      .status(400)
+      .send({ msg: "해당 키워드의 스터디룸 리스트 조회에 실패했습니다." });
   }
 }
 
@@ -99,29 +101,26 @@ async function createRoom(req, res) {
 }
 
 async function enterRoom(req, res) {
-  try {
-    const { roomId } = req.params;
-    const { userId, nick } = res.locals.user;
-    const { roomPassword } = req.body;
-    const [existRoom, existUser, peopleCnt] = [
-      await Room.findOne({
+  const { roomId } = req.params;
+  const { userId, nick } = res.locals.user;
+  const { roomPassword } = req.body;
+  const [existRoom, existUser, peopleCnt] = [
+    await Room.findOne({
+      where: { roomId },
+      raw: true,
+    }),
+    await PersonInRoom.findOne({
+      where: { roomId, userId },
+    }),
+    (
+      await PersonInRoom.findOne({
         where: { roomId },
         raw: true,
-      }),
-      await PersonInRoom.findOne({
-        where: { roomId, userId },
-      }),
-      (
-        await PersonInRoom.findOne({
-          where: { roomId },
-          raw: true,
-          attributes: [
-            [Sequelize.fn("COUNT", Sequelize.col("userId")), "count"],
-          ],
-        })
-      ).count,
-    ];
-
+        attributes: [[Sequelize.fn("COUNT", Sequelize.col("userId")), "count"]],
+      })
+    ).count,
+  ];
+  try {
     if (existUser)
       return res.status(400).send({
         msg: "이미 입장한 방입니다.",
@@ -132,7 +131,7 @@ async function enterRoom(req, res) {
         msg: "존재하지 않는 방입니다.",
       });
 
-    if (peopleCnt > 6) {
+    if (peopleCnt > 5) {
       return res.status(400).send({
         msg: "입장불가, 6명 초과",
       });
@@ -141,7 +140,7 @@ async function enterRoom(req, res) {
     await PersonInRoom.create({ userId, roomId, nick });
     return res.status(201).send({ msg: "입장 완료", room: existRoom });
   } catch (err) {
-    return res.status(400).send({
+    res.status(400).send({
       msg: "공개방 입장에 실패하였습니다.",
     });
   }
@@ -198,29 +197,47 @@ async function exitRoom(req, res) {
     ];
     if (!exsitUser)
       return res.status(400).send({ msg: "이미 퇴장한 방입니다." });
-    switch (parseInt(peopleCnt)) {
-      case 1:
-        console.log(`마지막 ${nick} 사용자 퇴장`);
-        await PersonInRoom.destroy({
-          where: { userId, roomId },
-        });
-        await Room.destroy({
-          where: { roomId },
-        });
-        res.status(201).send({ msg: "마지막 유저 퇴장, 방 삭제" });
-        break;
-      case 2:
-      case 3:
-      case 4:
-      case 5:
-      case 6:
-        console.log(`${nick} 사용자 퇴장`);
-        await PersonInRoom.destroy({
-          where: { userId, roomId },
-        });
-        res.status(201).send({ msg: "퇴장 완료" });
-        break;
+
+    if (peopleCnt == 1) {
+      console.log(`마지막 ${nick} 사용자 퇴장. ${roomId}번 방 삭제 `);
+      await PersonInRoom.destroy({
+        where: { userId, roomId },
+      });
+      await Room.destroy({
+        where: { roomId },
+      });
+      return res.status(201).send({ msg: "마지막 유저 퇴장, 방 삭제" });
+    } else {
+      console.log(`${nick} 사용자 퇴장`);
+      await PersonInRoom.destroy({
+        where: { userId, roomId },
+      });
+      return res.status(201).send({ msg: "퇴장 완료" });
     }
+
+    // switch (parseInt(peopleCnt)) {
+    //   case 1:
+    //     console.log(`마지막 ${nick} 사용자 퇴장`);
+    //     await PersonInRoom.destroy({
+    //       where: { userId, roomId },
+    //     });
+    //     await Room.destroy({
+    //       where: { roomId },
+    //     });
+    //     res.status(201).send({ msg: "마지막 유저 퇴장, 방 삭제" });
+    //     break;
+    //   case 2:
+    //   case 3:
+    //   case 4:
+    //   case 5:
+    //   case 6:
+    //     console.log(`${nick} 사용자 퇴장`);
+    //     await PersonInRoom.destroy({
+    //       where: { userId, roomId },
+    //     });
+    //     res.status(201).send({ msg: "퇴장 완료" });
+    //     break;
+    // }
   } catch (err) {
     return res.status(400).send({
       msg: "잘못된 퇴장 요청입니다.",
@@ -233,7 +250,5 @@ module.exports = {
   allRoomList,
   createRoom,
   enterRoom,
-  // enterPrivateRoom,
-  // reconnectRoom,
   exitRoom,
 };
