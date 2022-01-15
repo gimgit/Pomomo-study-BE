@@ -11,7 +11,7 @@ module.exports = class User extends Sequelize.Model {
           type: Sequelize.INTEGER,
         },
         snsId: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.STRING,
           unique: true,
           allowNull: true,
         },
@@ -45,7 +45,6 @@ module.exports = class User extends Sequelize.Model {
         statusMsg: {
           type: Sequelize.STRING,
           allowNull: true,
-          defaultValue: "상태메시지를 변경해주세요!"
         },
       },
       {
