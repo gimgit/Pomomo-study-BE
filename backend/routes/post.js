@@ -10,7 +10,6 @@ router.get("/", postCtl.getBoard);
 router.get("/:postId", postCtl.getArticle);
 router.delete("/:postId", postCtl.deleteArticle);
 
-router.get("/:postId/comments", commentCtl.getComments);
 router.post("/:postId/comments", authorization, commentCtl.postComment);
 router.delete(
   "/:postId/comments/:commentId",

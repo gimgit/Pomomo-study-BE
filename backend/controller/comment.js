@@ -49,4 +49,4 @@ async function deleteComment(req, res) {
   }
 }
 
-module.exports = { getComments, postComment, deleteComment };
+module.exports = { postComment, deleteComment };
