@@ -1,11 +1,12 @@
 const { Room, User, PersonInRoom } = require("../models");
-const Sequelize = require("sequelize");
-const { Op } = Sequelize;
+const { Sequelize } = require("sequelize");
 
 async function allRoomList(req, res) {
   try {
     const allRoom = await Room.findAll({
-      attributes: { exclude: ["roomPassword"] },
+      attributes: {
+        exclude: ["roomPassword"],
+      },
       order: [["createdAt", "DESC"]],
       include: [
         {
@@ -16,7 +17,12 @@ async function allRoomList(req, res) {
         },
       ],
     });
-    return res.status(200).send({ list: allRoom });
+    const startedRoom = await Room.findOne({
+      attributes: [
+        [Sequelize.fn("COUNT", Sequelize.col("isStarted")), "count"],
+      ],
+    });
+    return res.status(200).send({ list: allRoom, startedCnt: startedRoom });
   } catch (err) {
     return res
       .status(400)
@@ -40,7 +46,13 @@ async function keywordList(req, res) {
         },
       ],
     });
-    res.status(200).send({ list: keywordRoom });
+    const startedRoom = await Room.findOne({
+      attributes: [
+        [Sequelize.fn("COUNT", Sequelize.col("isStarted")), "count"],
+      ],
+      where: { purpose: roomPurpose },
+    });
+    res.status(200).send({ list: keywordRoom, startedCnt: startedRoom });
   } catch (err) {
     return res
       .status(400)
