@@ -50,9 +50,7 @@ module.exports = () => {
       {
         clientID: process.env.GOOGLE_ID,
         clientSecret: process.env.GOOGLE_SECRET,
-        callbackURL: "http://localhost:3000/api/v1/auth/google/callback",
-        //http://54.180.120.210/api/v1/auth/google/callback
-        //http://localhost:3000/api/v1/auth/google/callback
+        callbackURL: "https://bbomomo.com/api/v1/auth/google/callback",
       },
       async (accessToken, refreshToken, profile, done) => {
         console.log("google profile", profile);
@@ -79,7 +77,3 @@ module.exports = () => {
     )
   );
 };
-
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjczLCJuaWNrIjoi67CN65SUIiwiaWF0IjoxNjQyMjU2NDcxfQ.9F8g1_6KvQNO8xU-rOMqkmJRBQO-6jkXPnKNGHdTUnM;
-// login=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjczLCJuaWNrIjoi67CN65SUIiwiaWF0IjoxNjQyMjYwNjIxfQ.tvRQldyN9pLCIfoxkFQVQVMQWyYk89ukH4jzpB_Xj1o;
-// login=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjczLCJuaWNrIjoi67CN65SUIiwiaWF0IjoxNjQyMjYwNjY0fQ.u-iLHO8Uqa7AmADE2j4YYXlSQ5_Prb2Iy6WU8bBFZpQ
