@@ -29,8 +29,8 @@ const Router = require("./routes");
 app.use("/api/v1", Router);
 
 //test용
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/views/kakao.html");
-});
+// app.get("/", (req, res) => {
+//   res.sendFile(__dirname + "/views/kakao.html");
+// });
 
 module.exports = app;
