@@ -9,7 +9,7 @@ module.exports = () => {
     new KakaoStrategy(
       {
         clientID: process.env.KAKAO_ID, // 카카오 로그인에서 발급받은 REST API 키
-        callbackURL: "http://localhost:3000/api/v1/auth/kakao/callback", // 카카오 로그인 Redirect URI 경로
+        callbackURL: "https://bbomomo.com", // 카카오 로그인 Redirect URI 경로
         // http://localhost:3000/api/v1/auth/kakao/callback
         // http://54.180.120.210/api/v1/auth/kakao/callback
       },
@@ -30,8 +30,9 @@ module.exports = () => {
             done(null, exUser); // 로그인 인증 완료
           } else {
             // 가입되지 않는 유저면 회원가입 시키고 로그인을 시킨다
+            const nickname = Date.now();
             const newUser = await User.create({
-              nick: profile.displayName,
+              nick: nickname.toString(),
               snsId: profile.id,
               provider: "kakao",
             });
@@ -50,6 +51,8 @@ module.exports = () => {
         clientID: process.env.GOOGLE_ID,
         clientSecret: process.env.GOOGLE_SECRET,
         callbackURL: "http://localhost:3000/api/v1/auth/google/callback",
+        //http://54.180.120.210/api/v1/auth/google/callback
+        //http://localhost:3000/api/v1/auth/google/callback
       },
       async (accessToken, refreshToken, profile, done) => {
         console.log("google profile", profile);
@@ -60,8 +63,9 @@ module.exports = () => {
           if (exUser) {
             done(null, exUser);
           } else {
+            const nickname = Date.now();
             const newUser = await User.create({
-              nick: profile.displayName,
+              nick: nickname.toString(),
               snsId: profile.id,
               provider: "google",
             });
@@ -75,3 +79,7 @@ module.exports = () => {
     )
   );
 };
+
+// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjczLCJuaWNrIjoi67CN65SUIiwiaWF0IjoxNjQyMjU2NDcxfQ.9F8g1_6KvQNO8xU-rOMqkmJRBQO-6jkXPnKNGHdTUnM;
+// login=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjczLCJuaWNrIjoi67CN65SUIiwiaWF0IjoxNjQyMjYwNjIxfQ.tvRQldyN9pLCIfoxkFQVQVMQWyYk89ukH4jzpB_Xj1o;
+// login=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjczLCJuaWNrIjoi67CN65SUIiwiaWF0IjoxNjQyMjYwNjY0fQ.u-iLHO8Uqa7AmADE2j4YYXlSQ5_Prb2Iy6WU8bBFZpQ

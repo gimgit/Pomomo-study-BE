@@ -22,7 +22,7 @@ router.get("/kakao/callback", authCtl.kakaoCallback);
 //? 그리고 passport 로그인 전략에 의해 kakaoStrategy로 가서 카카오계정 정보와 DB를 비교해서 회원가입시키거나 로그인 처리하게 한다.
 
 //구글
-router.get("/google", passport.authenticate("google"));
+router.get("/google", passport.authenticate("google", { scope: ["profile"] }));
 router.get("/google/callback", authCtl.googleCallback);
 
 module.exports = router;

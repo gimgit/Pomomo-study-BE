@@ -1,6 +1,5 @@
 const { Post, User, StudyTime, Comment, sequelize } = require("../models");
 const Sequelize = require("sequelize");
-const { post } = require("../routes");
 const { Op } = Sequelize;
 
 // post posts
