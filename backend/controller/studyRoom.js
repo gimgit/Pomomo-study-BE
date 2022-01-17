@@ -30,15 +30,15 @@ async function keywordList(req, res) {
     const keywordRoom = await Room.findAll({
       where: { purpose: roomPurpose },
       attributes: { exclude: ["roomPassword"] },
+      order: [["createdAt", "DESC"]],
       include: [
         {
           model: PersonInRoom,
           as: "peopleInRoom",
-          attributes: ["userId", "createdAt"],
+          attributes: ["userId", "createdAt", "nick"],
           raw: true,
         },
       ],
-      order: [["createdAt", "DESC"]],
     });
     res.status(200).send({ list: keywordRoom });
   } catch (err) {

@@ -70,8 +70,11 @@ async function updateUserInfo(req, res) {
   const { userId } = res.locals.user;
   const { category, nick } = req.body;
   try {
-    await User.update({ nick, category }, { where: { userId: userId } });
-    return res.status(201).send({ msg: "회원정보 수정완료!" });
+    let userNewInfo = {};
+    if (nick) userNewInfo.nick = nick;
+    if (category) userNewInfo.category = category;
+    await User.update(userNewInfo, { where: { userId: userId } });
+    return res.status(201).send({ msg: "수정완료!" });
   } catch (err) {
     return res.status(400).send({
       msg: "이미 존재하는 닉네임 또는 요청하는 데이터 형식이 올바르지 않습니다.",
