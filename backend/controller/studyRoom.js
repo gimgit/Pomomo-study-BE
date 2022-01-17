@@ -34,7 +34,7 @@ async function keywordList(req, res) {
         {
           model: PersonInRoom,
           as: "peopleInRoom",
-          attributes: ["userId", "createdAt"],
+          attributes: ["userId", "createdAt", "nick"],
           raw: true,
         },
       ],
