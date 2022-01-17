@@ -2,19 +2,19 @@ const { Post, User, Comment } = require("../models");
 const Sequelize = require("sequelize");
 const { Op } = Sequelize;
 
-// get Comment
-async function getComments(req, res) {
-  const { postId } = req.params;
-  try {
-    const comments = await Comment.findAll({
-      where: { postId },
-      order: [["createdAt", "ASC"]],
-    });
-    return res.status(201).json({ comments });
-  } catch (err) {
-    return res.status(400).send({ msg: "댓글 조회 실패" });
-  }
-}
+// // get Comment
+// async function getComments(req, res) {
+//   const { postId } = req.params;
+//   try {
+//     const comments = await Comment.findAll({
+//       where: { postId },
+//       order: [["createdAt", "ASC"]],
+//     });
+//     return res.status(201).json({ comments });
+//   } catch (err) {
+//     return res.status(400).send({ msg: "댓글 조회 실패" });
+//   }
+// }
 
 // post Comment
 // 작성자 프로필이미지 처리해야됨
@@ -24,7 +24,6 @@ async function postComment(req, res) {
   const { comment } = req.body;
   try {
     await Comment.create({
-      nick,
       postId,
       comment,
       userId,

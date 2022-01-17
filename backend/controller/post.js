@@ -10,11 +10,11 @@ async function postArticle(req, res) {
     if (!req.file) {
       // file이 아니고 bgtype 일 때
       const postImg = bgtype;
-      await Post.create({ nick, postContent, studyTime, postImg, userId });
+      await Post.create({ postContent, studyTime, postImg, userId });
     } else {
       // file 일 때
       const postImg = req.file.location;
-      await Post.create({ nick, postContent, studyTime, postImg, userId });
+      await Post.create({ postContent, studyTime, postImg, userId });
     }
     return res.status(201).send({
       msg: "게시글 작성 성공",

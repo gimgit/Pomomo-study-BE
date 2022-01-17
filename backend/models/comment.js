@@ -11,10 +11,6 @@ module.exports = class Comment extends Sequelize.Model {
           autoIncrement: true,
           type: Sequelize.INTEGER,
         },
-        nick: {
-          type: Sequelize.STRING,
-          allowNull: false,
-        },
         comment: {
           type: Sequelize.STRING,
           allowNull: false,

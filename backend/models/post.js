@@ -11,10 +11,6 @@ module.exports = class Post extends Sequelize.Model {
           autoIncrement: true,
           type: Sequelize.INTEGER,
         },
-        nick: {
-          type: Sequelize.STRING,
-          allowNull: false,
-        },
         postContent: {
           type: Sequelize.STRING,
           allowNull: false,
