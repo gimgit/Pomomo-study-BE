@@ -19,6 +19,7 @@ module.exports = () => {
       // accessToken, refreshToken: 로그인 성공 후 카카오가 보내준 토큰
       // profile: 카카오가 보내준 유저 정보. profile의 정보를 바탕으로 회원가입
       async (accessToken, refreshToken, profile, done) => {
+        console.log("토큰 :", accessToken);
         console.log("kakao profile", profile);
         try {
           const exUser = await User.findOne({
@@ -30,8 +31,9 @@ module.exports = () => {
             done(null, exUser); // 로그인 인증 완료
           } else {
             // 가입되지 않는 유저면 회원가입 시키고 로그인을 시킨다
+            const nickname = Date.now();
             const newUser = await User.create({
-              nick: profile.displayName,
+              nick: nickname.toString(),
               snsId: profile.id,
               provider: "kakao",
             });
@@ -60,8 +62,9 @@ module.exports = () => {
           if (exUser) {
             done(null, exUser);
           } else {
+            const nickname = Date.now();
             const newUser = await User.create({
-              nick: profile.displayName,
+              nick: nickname.toString(),
               snsId: profile.id,
               provider: "google",
             });
