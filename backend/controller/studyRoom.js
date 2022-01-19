@@ -81,18 +81,17 @@ async function createRoom(req, res) {
       return res.status(400).send({ msg: "방이름이 중복됩니다" });
     }
 
-    // 비공개 방 기능 확장 예정
-    // if (private == 0) {
-    //   if (roomPassword) {
-    //     return res
-    //       .status(400)
-    //       .send({ msg: "공개방에는 비밀번호를 입력하지 않습니다" });
-    //   }
-    // } else if (private == 1) {
-    //   if (roomPassword.length < 4) {
-    //     return res.status(400).send({ msg: "비밀번호는 4글자 이상입니다." });
-    //   }
-    // }
+    if (private == 0) {
+      if (roomPassword) {
+        return res
+          .status(400)
+          .send({ msg: "공개방에는 비밀번호를 입력하지 않습니다" });
+      }
+    } else if (private == 1) {
+      if (roomPassword.length < 4) {
+        return res.status(400).send({ msg: "비밀번호는 4글자 이상입니다." });
+      }
+    }
 
     const openAtTime = Date.now() + openAt * 60 * 1000;
     const newRoom = await Room.create({
@@ -112,10 +111,32 @@ async function createRoom(req, res) {
   }
 }
 
+async function checkRoomPw(req, res) {
+  const { roomId } = req.params;
+  const { roomPassword } = req.body;
+  const { userId } = res.locals.user;
+
+  try {
+    let room = await Room.findOne({
+      where: { roomId },
+      raw: true,
+    });
+    if (roomPassword != room.roomPassword) {
+      return res.status(400).send({
+        msg: "비공개방 패스워드가 불일치합니다",
+      });
+    }
+    return res.status(200).send({ msg: "비밀번호 일치", roomId, userId });
+  } catch (err) {
+    return res.status(400).send({
+      msg: "비공개방 입장에 실패하였습니다.",
+    });
+  }
+}
+
 async function enterRoom(req, res) {
   const { roomId } = req.params;
   const { userId, nick } = res.locals.user;
-  const { roomPassword } = req.body;
   const [existRoom, existUser, peopleCnt] = [
     await Room.findOne({
       where: { roomId },
@@ -263,4 +284,5 @@ module.exports = {
   createRoom,
   enterRoom,
   exitRoom,
+  checkRoomPw,
 };

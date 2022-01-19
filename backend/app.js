@@ -9,7 +9,7 @@ const apiLimit = require("./middlewares/rate-limiter");
 const app = express();
 app.use(cors());
 passportConfig();
-app.use(apiLimit);
+// app.use(apiLimit);
 
 const { sequelize } = require("./models");
 

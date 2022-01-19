@@ -9,5 +9,6 @@ router.get("/list/keyword/:roomPurpose", studyRoomCtl.keywordList);
 router.post("/hostRoom", authorization, studyRoomCtl.createRoom);
 router.post("/enterRoom/:roomId", authorization, studyRoomCtl.enterRoom);
 router.delete("/exitRoom/:roomId", authorization, studyRoomCtl.exitRoom);
+router.post("/checkRoomPw/:roomId", authorization, studyRoomCtl.checkRoomPw);
 
 module.exports = router;
