@@ -6,7 +6,6 @@ function timeSet() {
   // 1. 현재 날짜정보, 오늘 타임스탬프, 오늘 요일 출력
   const now = new Date();
   const [timestamp, day] = [now.getTime(), now.getDay()];
-  let weekStart, todayStart;
 
   // 2. 금주 월요일과 어제의 timestamp 출력.
   const [mondayStamp, yesterdayStamp] = [
@@ -24,7 +23,8 @@ function timeSet() {
     `0${new Date(mondayStamp).getDate()}`.slice(-2),
   ];
 
-  weekStart = `${year}-${month}-${monday}T00:00:00.000Z`;
+  let weekStart = `${year}-${month}-${monday}T00:00:00.000Z`;
+  let todayStart;
   currentTime < 9
     ? (todayStart = `${year}-${month}-${yesterday}T00:00:00.000Z`)
     : (todayStart = `${year}-${month}-${today}T00:00:00.000Z`);
@@ -126,6 +126,7 @@ async function showRanking(req, res) {
       ],
       group: ["userId"],
       order: [[sequelize.fn("SUM", sequelize.col("studyTime")), "DESC"]],
+      limit: 20,
     });
     return res.status(200).send({
       studyRanking,
