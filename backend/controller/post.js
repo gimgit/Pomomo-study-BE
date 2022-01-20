@@ -2,6 +2,8 @@ const { Post, User, StudyTime, Comment, sequelize } = require("../models");
 const Sequelize = require("sequelize");
 const { Op } = Sequelize;
 
+//비속어 차단
+
 // post posts
 async function postArticle(req, res) {
   try {
