@@ -51,7 +51,7 @@ io.on("connection", (socket) => {
           },
         });
         socket.emit("welcome", users, users.length);
-        
+
         const room = await Room.findByPk(roomID);
         const currentRound = room.currentRound;
         const totalRound = room.round;
@@ -76,7 +76,8 @@ io.on("connection", (socket) => {
       },
       { where: { roomID } }
     );
-    socket.emit("studyTime", currentRound, room.round, openAt);
+    const now = Date.now();
+    socket.emit("studyTime", currentRound, room.round, openAt, now);
   });
 
   socket.on("endStudy", async () => {
@@ -107,8 +108,9 @@ io.on("connection", (socket) => {
       userId: userID,
       studyTime: room.studyTime,
     });
-    const endTime = Date.now() + 60000;
-    socket.emit("totalEnd", endTime);
+    const now = Date.now();
+    const endTime = now + 60000;
+    socket.emit("totalEnd", endTime, now);
   });
 
   socket.on("disconnecting", async () => {
