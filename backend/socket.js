@@ -97,7 +97,8 @@ io.on("connection", (socket) => {
       userId: userID,
       studyTime: room.studyTime,
     });
-    socket.emit("restTime", currentRound, totalRound, openAt);
+    const now = Date.now();
+    socket.emit("restTime", currentRound, totalRound, openAt, now);
   });
 
   socket.on("totalEnd", async () => {
