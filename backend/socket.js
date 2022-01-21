@@ -51,12 +51,14 @@ io.on("connection", (socket) => {
           },
         });
         socket.emit("welcome", users, users.length);
+        
         const room = await Room.findByPk(roomID);
         const currentRound = room.currentRound;
         const totalRound = room.round;
         const openAt = room.openAt;
+        const now = Date.now();
 
-        socket.emit("restTime", currentRound, totalRound, openAt);
+        socket.emit("restTime", currentRound, totalRound, openAt, now);
       } catch (error) {
         console.log(error);
       }
@@ -108,7 +110,7 @@ io.on("connection", (socket) => {
     socket.emit("totalEnd", endTime);
   });
 
-  socket.on("disconnect", async () => {
+  socket.on("disconnecting", async () => {
     console.log(`${userID}님이 ${roomID}번방에서 나가셨습니다!`);
 
     await PersonInRoom.destroy({

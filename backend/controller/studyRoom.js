@@ -247,30 +247,6 @@ async function exitRoom(req, res) {
       });
       return res.status(201).send({ msg: "퇴장 완료" });
     }
-
-    // switch (parseInt(peopleCnt)) {
-    //   case 1:
-    //     console.log(`마지막 ${nick} 사용자 퇴장`);
-    //     await PersonInRoom.destroy({
-    //       where: { userId, roomId },
-    //     });
-    //     await Room.destroy({
-    //       where: { roomId },
-    //     });
-    //     res.status(201).send({ msg: "마지막 유저 퇴장, 방 삭제" });
-    //     break;
-    //   case 2:
-    //   case 3:
-    //   case 4:
-    //   case 5:
-    //   case 6:
-    //     console.log(`${nick} 사용자 퇴장`);
-    //     await PersonInRoom.destroy({
-    //       where: { userId, roomId },
-    //     });
-    //     res.status(201).send({ msg: "퇴장 완료" });
-    //     break;
-    // }
   } catch (err) {
     return res.status(400).send({
       msg: "잘못된 퇴장 요청입니다.",
