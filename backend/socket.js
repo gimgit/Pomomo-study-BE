@@ -65,6 +65,10 @@ io.on("connection", (socket) => {
     }
   );
 
+  socket.on("peer", (nick) => {
+    socket.emit("peer", nick);
+  });
+  
   socket.on("endRest", async (currentRound) => {
     const room = await Room.findByPk(roomID);
     const openAt = Date.now() + room.studyTime * 60 * 1000;
