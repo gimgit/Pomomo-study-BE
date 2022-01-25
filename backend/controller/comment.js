@@ -36,6 +36,20 @@ async function postComment(req, res) {
   }
 }
 
+//update Comment
+async function updateComment(req, res) {
+  try {
+    const { comment } = req.body;
+    const { postId, commentId } = req.params;
+    await Comment.update({ comment }, { where: { postId, commentId } });
+    return res.status(201).send({
+      msg: "댓글 수정 완료",
+    });
+  } catch (err) {
+    return res.status(400).send({ msg: "댓글 수정 실패" });
+  }
+}
+
 //delete Comment
 async function deleteComment(req, res) {
   try {
