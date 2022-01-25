@@ -11,6 +11,11 @@ router.get("/:postId", postCtl.getArticle);
 router.delete("/:postId", postCtl.deleteArticle);
 
 router.post("/:postId/comments", authorization, commentCtl.postComment);
+router.put(
+  "/:postId/comments/:commentId",
+  authorization,
+  commentCtl.updateComment
+);
 router.delete(
   "/:postId/comments/:commentId",
   authorization,
