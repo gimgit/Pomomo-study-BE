@@ -5,12 +5,15 @@ const { Op } = Sequelize;
 function timeSet() {
   // 1. 현재 날짜정보, 오늘 타임스탬프, 오늘 요일 출력
   const now = new Date();
-  const [timestamp, day] = [now.getTime(), now.getDay()];
+  const nowTimestamp = now.getTime();
+  const nowDay = now.getDay();
+  const dayToMs = 24 * 60 * 60 * 1000;
 
+  console.log(now);
   // 2. 금주 월요일과 어제의 timestamp 출력.
   const [mondayStamp, yesterdayStamp] = [
-    timestamp - (day - 1) * 24 * 60 * 60 * 1000,
-    timestamp - 24 * 60 * 60 * 1000,
+    nowTimestamp - nowDay * dayToMs,
+    nowTimestamp - dayToMs,
   ];
 
   // 3. 현재시각, 년, 월, 오늘날짜, 어제날짜, 금주 월요일 날짜를 출력.
