@@ -51,18 +51,24 @@ io.on("connection", (socket) => {
           },
         });
         socket.emit("welcome", users, users.length);
+
         const room = await Room.findByPk(roomID);
         const currentRound = room.currentRound;
         const totalRound = room.round;
         const openAt = room.openAt;
+        const now = Date.now();
 
-        socket.emit("restTime", currentRound, totalRound, openAt);
+        socket.emit("restTime", currentRound, totalRound, openAt, now);
       } catch (error) {
         console.log(error);
       }
     }
   );
 
+  socket.on("peer", (nick) => {
+    socket.emit("peer", nick);
+  });
+  
   socket.on("endRest", async (currentRound) => {
     const room = await Room.findByPk(roomID);
     const openAt = Date.now() + room.studyTime * 60 * 1000;
@@ -74,7 +80,8 @@ io.on("connection", (socket) => {
       },
       { where: { roomID } }
     );
-    socket.emit("studyTime", currentRound, room.round, openAt);
+    const now = Date.now();
+    socket.emit("studyTime", currentRound, room.round, openAt, now);
   });
 
   socket.on("endStudy", async () => {
@@ -95,7 +102,8 @@ io.on("connection", (socket) => {
       userId: userID,
       studyTime: room.studyTime,
     });
-    socket.emit("restTime", currentRound, totalRound, openAt);
+    const now = Date.now();
+    socket.emit("restTime", currentRound, totalRound, openAt, now);
   });
 
   socket.on("totalEnd", async () => {
@@ -104,11 +112,12 @@ io.on("connection", (socket) => {
       userId: userID,
       studyTime: room.studyTime,
     });
-    const endTime = Date.now() + 60000;
-    socket.emit("totalEnd", endTime);
+    const now = Date.now();
+    const endTime = now + 60000;
+    socket.emit("totalEnd", endTime, now);
   });
 
-  socket.on("disconnect", async () => {
+  socket.on("disconnecting", async () => {
     console.log(`${userID}님이 ${roomID}번방에서 나가셨습니다!`);
 
     await PersonInRoom.destroy({
