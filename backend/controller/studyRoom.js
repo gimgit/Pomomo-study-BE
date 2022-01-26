@@ -81,13 +81,7 @@ async function createRoom(req, res) {
       return res.status(400).send({ msg: "방이름이 중복됩니다" });
     }
 
-    if (private == 0) {
-      if (roomPassword) {
-        return res
-          .status(400)
-          .send({ msg: "공개방에는 비밀번호를 입력하지 않습니다" });
-      }
-    } else if (private == 1) {
+    if (private == 1) {
       if (roomPassword.length < 4) {
         return res.status(400).send({ msg: "비밀번호는 4글자 이상입니다." });
       }

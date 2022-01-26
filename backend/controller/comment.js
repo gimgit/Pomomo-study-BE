@@ -63,4 +63,4 @@ async function deleteComment(req, res) {
   }
 }
 
-module.exports = { postComment, deleteComment };
+module.exports = { postComment, deleteComment, updateComment };
