@@ -128,7 +128,10 @@ async function showRanking(req, res) {
         },
       ],
       group: ["userId"],
-      order: [[sequelize.fn("SUM", sequelize.col("studyTime")), "DESC"]],
+      order: [
+        [sequelize.fn("SUM", sequelize.col("studyTime")), "DESC"],
+        ["userId", "DESC"],
+      ],
       limit: 20,
     });
     return res.status(200).send({
