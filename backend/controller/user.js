@@ -17,16 +17,17 @@ function timeSet() {
   ];
 
   // 3. 현재시각, 년, 월, 오늘날짜, 어제날짜, 금주 월요일 날짜를 출력.
-  const [currentTime, year, month, today, yesterday, monday] = [
+  const [currentTime, year, month, today, yesterday, monday, mondayMonth] = [
     now.getHours(),
     now.getFullYear(),
     `0${now.getMonth() + 1}`.slice(-2),
     `0${now.getDate()}`.slice(-2),
     `0${new Date(yesterdayStamp).getDate()}`.slice(-2),
     `0${new Date(mondayStamp).getDate()}`.slice(-2),
+    `0${new Date(mondayStamp).getMonth() + 1}`.slice(-2),
   ];
 
-  let weekStart = `${year}-${month}-${monday}T00:00:00.000Z`;
+  let weekStart = `${year}-${mondayMonth}-${monday}T00:00:00.000Z`;
   let todayStart;
   currentTime < 9
     ? (todayStart = `${year}-${month}-${yesterday}T00:00:00.000Z`)
