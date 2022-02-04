@@ -5,15 +5,8 @@ const cors = require("cors");
 const passport = require("passport");
 const passportConfig = require("./passport");
 const apiLimit = require("./middlewares/rate-limiter");
-// const client = require("./redis");
 const router = require("express").Router();
-
-// client.SET("foo", "chal");
-// client.GET("foo", (err, value) => {
-//   if (err) console.log(err.message);
-//   console.log(value);
-// });
-
+const rankingCron = require("./crons/monthlyRank");
 const app = express();
 app.use(cors());
 passportConfig();
@@ -36,5 +29,7 @@ app.use(express.urlencoded({ extended: false }));
 
 const Router = require("./routes");
 app.use("/api/v1", Router);
+
+rankingCron.updateRanking();
 
 module.exports = app;

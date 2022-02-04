@@ -113,7 +113,7 @@ io.on("connection", (socket) => {
       studyTime: room.studyTime,
     });
     const now = Date.now();
-    const endTime = now + 60000;
+    const endTime = now + 180 * 1000;
     socket.emit("totalEnd", endTime, now);
   });
 

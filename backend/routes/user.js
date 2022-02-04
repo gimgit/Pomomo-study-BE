@@ -17,6 +17,5 @@ router.put(
 );
 router.get("/ranking", mypageCtl.showRanking);
 router.get("/monthlyRanking", mypageCtl.showMonthlyRanking);
-router.post("/monthlyRanking", mypageCtl.monthlyRanking);
 
 module.exports = router;
