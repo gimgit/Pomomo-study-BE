@@ -1,38 +1,24 @@
 const { User, StudyTime, sequelize } = require("../models");
 const Sequelize = require("sequelize");
 const { Op } = Sequelize;
+const client = require("../redis");
 
 function timeSet() {
-  // 1. 현재 날짜정보, 오늘 타임스탬프, 오늘 요일 출력
+  // 1. 현재 날짜와 시간, 24시간을 밀리세컨으로 변환
   const now = new Date();
-  const nowTimestamp = now.getTime();
-  const nowDay = now.getDay();
   const dayToMs = 24 * 60 * 60 * 1000;
-
-  console.log(now);
-  // 2. 금주 월요일과 어제의 timestamp 출력.
-  const [mondayStamp, yesterdayStamp] = [
-    nowTimestamp - nowDay * dayToMs,
-    nowTimestamp - dayToMs,
+  // 2. 지난 일요일과 어제의 timestamp 출력.
+  const [monday, yesterday] = [
+    new Date(now.getTime() - now.getDay() * dayToMs),
+    new Date(now.getTime() - dayToMs),
   ];
-
-  // 3. 현재시각, 년, 월, 오늘날짜, 어제날짜, 금주 월요일 날짜를 출력.
-  const [currentTime, year, month, today, yesterday, monday] = [
-    now.getHours(),
-    now.getFullYear(),
-    `0${now.getMonth() + 1}`.slice(-2),
-    `0${now.getDate()}`.slice(-2),
-    `0${new Date(yesterdayStamp).getDate()}`.slice(-2),
-    `0${new Date(mondayStamp).getDate()}`.slice(-2),
-  ];
-
-  let weekStart = `${year}-${month}-${monday}T00:00:00.000Z`;
   let todayStart;
-  currentTime < 9
-    ? (todayStart = `${year}-${month}-${yesterday}T00:00:00.000Z`)
-    : (todayStart = `${year}-${month}-${today}T00:00:00.000Z`);
+  now.getHours() < 9
+    ? (todayStart = `${yesterday.toISOString().substring(0, 11)}00:00:00.000Z`)
+    : (todayStart = `${now.toISOString().substring(0, 11)}00:00:00.000Z`);
+  const weekStart = `${monday.toISOString().substring(0, 11)}00:00:00.000Z`;
 
-  return { todayStart, weekStart };
+  return { todayStart, weekStart, now };
 }
 
 async function checkUserInfo(req, res) {
@@ -144,12 +130,64 @@ async function showRanking(req, res) {
   }
 }
 
+async function monthlyRanking(req, res) {
+  const { now } = timeSet();
+  const lastMonthEnd = `${now.toISOString().substring(0, 8)}01T00:00:00.000Z`;
+  const lastMonthStart = `${now.getFullYear()}-${`0${now.getMonth()}`.slice(
+    -2
+  )}-01T00:00:00.001Z`;
+  const studyRanking = await StudyTime.findAll({
+    where: {
+      createdAt: {
+        [Op.between]: [lastMonthStart, lastMonthEnd],
+      },
+    },
+    attributes: [
+      "userId",
+      [sequelize.fn("SUM", sequelize.col("studyTime")), "weeklyRecord"],
+    ],
+    include: [
+      {
+        model: User,
+        as: "User",
+        attributes: ["nick", "category"],
+      },
+    ],
+    group: ["userId"],
+    order: [
+      [sequelize.fn("SUM", sequelize.col("studyTime")), "DESC"],
+      ["userId", "DESC"],
+    ],
+    limit: 10,
+  });
+  for (let i = 0; i < studyRanking.length; i++) {
+    let userName = studyRanking[i].User.nick;
+    let studyRecord = studyRanking[i].dataValues.weeklyRecord;
+    client.ZADD("test", { score: studyRecord, value: userName });
+  }
+  return res.status(200).send({ msg: "월간 랭킹 갱신" });
+}
+
+async function showMonthlyRanking(req, res) {
+  const studyRecord = await client.zRangeWithScores("test", 0, -1);
+  const recordLength = studyRecord.length;
+  const monthlyRank = [];
+
+  for (let i = 0; i < recordLength; i++) {
+    monthlyRank.push(studyRecord.pop());
+  }
+
+  return res.status(200).send(monthlyRank);
+}
+
 module.exports = {
   checkUserInfo,
   updateUserInfo,
   updateUserStatus,
   updateUserImg,
   showRanking,
+  monthlyRanking,
+  showMonthlyRanking,
 };
 
 // const { userId } = res.locals.user;

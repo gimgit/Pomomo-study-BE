@@ -5,11 +5,18 @@ const cors = require("cors");
 const passport = require("passport");
 const passportConfig = require("./passport");
 const apiLimit = require("./middlewares/rate-limiter");
+// const client = require("./redis");
+const router = require("express").Router();
+
+// client.SET("foo", "chal");
+// client.GET("foo", (err, value) => {
+//   if (err) console.log(err.message);
+//   console.log(value);
+// });
 
 const app = express();
 app.use(cors());
 passportConfig();
-// app.use(apiLimit);
 
 const { sequelize } = require("./models");
 
@@ -29,10 +36,5 @@ app.use(express.urlencoded({ extended: false }));
 
 const Router = require("./routes");
 app.use("/api/v1", Router);
-
-// test용;
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/views/kakao.html");
-});
 
 module.exports = app;
