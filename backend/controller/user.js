@@ -1,37 +1,22 @@
 const { User, StudyTime, sequelize } = require("../models");
 const Sequelize = require("sequelize");
 const { Op } = Sequelize;
+const client = require("../redis");
 
 function timeSet() {
-  // 1. 현재 날짜정보, 오늘 타임스탬프, 오늘 요일 출력
+  // 1. 현재 날짜와 시간, 24시간을 밀리세컨으로 변환
   const now = new Date();
-  const nowTimestamp = now.getTime();
-  const nowDay = now.getDay();
   const dayToMs = 24 * 60 * 60 * 1000;
-
-  console.log(now);
-  // 2. 금주 월요일과 어제의 timestamp 출력.
-  const [mondayStamp, yesterdayStamp] = [
-    nowTimestamp - nowDay * dayToMs,
-    nowTimestamp - dayToMs,
+  // 2. 지난 일요일과 어제의 timestamp 출력.
+  const [monday, yesterday] = [
+    new Date(now.getTime() - now.getDay() * dayToMs),
+    new Date(now.getTime() - dayToMs),
   ];
-
-  // 3. 현재시각, 년, 월, 오늘날짜, 어제날짜, 금주 월요일 날짜를 출력.
-  const [currentTime, year, month, today, yesterday, monday, mondayMonth] = [
-    now.getHours(),
-    now.getFullYear(),
-    `0${now.getMonth() + 1}`.slice(-2),
-    `0${now.getDate()}`.slice(-2),
-    `0${new Date(yesterdayStamp).getDate()}`.slice(-2),
-    `0${new Date(mondayStamp).getDate()}`.slice(-2),
-    `0${new Date(mondayStamp).getMonth() + 1}`.slice(-2),
-  ];
-
-  let weekStart = `${year}-${mondayMonth}-${monday}T00:00:00.000Z`;
   let todayStart;
-  currentTime < 9
-    ? (todayStart = `${year}-${month}-${yesterday}T00:00:00.000Z`)
-    : (todayStart = `${year}-${month}-${today}T00:00:00.000Z`);
+  now.getHours() < 9
+    ? (todayStart = `${yesterday.toISOString().substring(0, 11)}00:00:00.000Z`)
+    : (todayStart = `${now.toISOString().substring(0, 11)}00:00:00.000Z`);
+  const weekStart = `${monday.toISOString().substring(0, 11)}00:00:00.000Z`;
 
   return { todayStart, weekStart };
 }
@@ -145,57 +130,24 @@ async function showRanking(req, res) {
   }
 }
 
+async function showMonthlyRanking(req, res) {
+  const redisTable = "monthlyRanking";
+  const studyRecord = await client.zRangeWithScores(redisTable, 0, -1);
+  const recordLength = studyRecord.length;
+  const monthlyRank = [];
+
+  for (let i = 0; i < recordLength; i++) {
+    monthlyRank.push(studyRecord.pop());
+  }
+
+  return res.status(200).send(monthlyRank);
+}
+
 module.exports = {
   checkUserInfo,
   updateUserInfo,
   updateUserStatus,
   updateUserImg,
   showRanking,
+  showMonthlyRanking,
 };
-
-// const { userId } = res.locals.user;
-// let today = new Date();
-// const timestamp = today.getTime();
-
-// // 어제와 내일의 timestamp를 출력합니다.
-// const [yesterday, tomorrow] = [
-//   timestamp - 24 * 60 * 60 * 1000,
-//   timestamp + 24 * 60 * 60 * 1000,
-// ];
-// // 년, 월, 어제 날짜, 오늘 날짜, 내일 날짜를 출력합니다.
-// const [year, month, dayBefore, todayDate, dayAfter] = [
-//   today.getFullYear(),
-//   `0${today.getMonth() + 1}`.slice(-2),
-//   `0${new Date(yesterday).getDate()}`.slice(-2),
-//   `0${today.getDate()}`.slice(-2),
-//   `0${new Date(tomorrow).getDate()}`.slice(-2),
-// ];
-
-// // 현재시각이 09시 이전인 경우 어제 09시 부터 오늘 09시까지의 데이터 출력
-// // 현재시각이 09시 이후인 경우 오늘 09시 부터 내일 09시까지의 데이터 출력
-// let isNewDay = today.getHours();
-// isNewDay < 9
-//   ? (todayStart = `${year}-${month}-${dayBefore}T00:00:00.000Z`)
-//   : (todayStart = `${year}-${month}-${todayDate}T00:00:00.000Z`);
-// isNewDay < 9
-//   ? (todayEnd = `${year}-${month}-${todayDate}T00:00:00.000Z`)
-//   : (todayEnd = `${year}-${month}-${dayAfter}T00:00:00.000Z`);
-
-// console.log(todayStart);
-// console.log(todayEnd);
-
-// const today = new Date();
-// const timestamp = today.getTime();
-// const day = today.getDay();
-
-// // 금주 월요일의 timestamp를 출력합니다.
-// const [startPoint] = [timestamp - (day - 1) * 24 * 60 * 60 * 1000];
-
-// // 년, 월, 월요일 날짜를 출력합니다.
-// const [year, month, monday] = [
-//   today.getFullYear(),
-//   `0${today.getMonth() + 1}`.slice(-2),
-//   `0${new Date(startPoint).getDate()}`.slice(-2),
-// ];
-
-// const weekStart = `${year}-${month}-${monday}T00:00:01.000Z`;

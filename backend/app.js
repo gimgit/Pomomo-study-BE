@@ -5,11 +5,11 @@ const cors = require("cors");
 const passport = require("passport");
 const passportConfig = require("./passport");
 const apiLimit = require("./middlewares/rate-limiter");
-
+const router = require("express").Router();
+const rankingCron = require("./crons/monthlyRank");
 const app = express();
 app.use(cors());
 passportConfig();
-// app.use(apiLimit);
 
 const { sequelize } = require("./models");
 
@@ -30,9 +30,6 @@ app.use(express.urlencoded({ extended: false }));
 const Router = require("./routes");
 app.use("/api/v1", Router);
 
-// test용;
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/views/kakao.html");
-});
+rankingCron.updateRanking();
 
 module.exports = app;

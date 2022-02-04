@@ -16,5 +16,6 @@ router.put(
   mypageCtl.updateUserImg
 );
 router.get("/ranking", mypageCtl.showRanking);
+router.get("/monthlyRanking", mypageCtl.showMonthlyRanking);
 
 module.exports = router;
