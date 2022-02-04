@@ -5,7 +5,6 @@ const cors = require("cors");
 const passport = require("passport");
 const passportConfig = require("./passport");
 const apiLimit = require("./middlewares/rate-limiter");
-const router = require("express").Router();
 const rankingCron = require("./crons/monthlyRank");
 const app = express();
 app.use(cors());
