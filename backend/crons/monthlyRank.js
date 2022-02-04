@@ -8,7 +8,6 @@ function timeSet() {
   const now = new Date();
   const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1, 0, 0, 0);
   const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 0, 0, 0);
-
   return { lastMonth, lastMonthEnd };
 }
 
