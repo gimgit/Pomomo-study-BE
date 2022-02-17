@@ -1,6 +1,6 @@
 const app = require("./app");
 const sequelize = require("sequelize");
-const { Room, PersonInRoom, StudyTime } = require("./models");
+const { Room, PersonInRoom, StudyTime, User } = require("./models");
 const { Op } = sequelize;
 
 const fs = require("fs");
@@ -43,15 +43,24 @@ io.on("connection", (socket) => {
       try {
         socket.join(roomID);
         console.log(roomID, "방에 입장");
+        await User.update(
+          {
+            peerID,
+          },
+          {
+            where: { userID },
+          }
+        );
         socket
           .to(roomID)
           .emit("user-connected", peerID, nickname, streamID, statusMsg);
-        const users = await PersonInRoom.findAll({
-          where: {
-            roomId: roomID,
-            userId: { [Op.not]: userID },
-          },
-        });
+
+        // const users = await PersonInRoom.findAll({
+        //   where: {
+        //     roomId: roomID,
+        //     userId: { [Op.not]: userID },
+        //   },
+        // });
 
         const room = await Room.findByPk(roomID);
         const currentRound = room.currentRound;
