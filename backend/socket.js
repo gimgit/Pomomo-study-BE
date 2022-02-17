@@ -55,13 +55,6 @@ io.on("connection", (socket) => {
           .to(roomID)
           .emit("user-connected", peerID, nickname, streamID, statusMsg);
 
-        // const users = await PersonInRoom.findAll({
-        //   where: {
-        //     roomId: roomID,
-        //     userId: { [Op.not]: userID },
-        //   },
-        // });
-
         const room = await Room.findByPk(roomID);
         const currentRound = room.currentRound;
         const totalRound = room.round;

@@ -46,6 +46,10 @@ module.exports = class User extends Sequelize.Model {
           type: Sequelize.STRING,
           allowNull: true,
         },
+        peerId: {
+          type: Sequelize.STRING,
+          allowNull: true,
+        },
       },
       {
         sequelize,
